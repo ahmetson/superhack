@@ -31,8 +31,22 @@ defined in the ABIs:
 ---
 
 ## Run
+Check your balance on both networks
+```
+npx hardhat run scripts/index.ts
+```
+
+### Hello World
+As a hello world, we use `Counter.`
 
 ```shell
-npx hardhat help
-npx hardhat run scripts/index.ts
+npx hardhat deploy --network l2
+```
+
+Open the `scripts/counter.ts` and 
+change the counter address.
+Then run the following:
+
+```shell
+npx hardhat run scripts/counter.ts --network l2
 ```
