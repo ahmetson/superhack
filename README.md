@@ -7,6 +7,7 @@ A mono-repo of the multiple projects for the super hack.
 > Requires to run on WSL 2.0. It wasn't tested on windows directly.
 
 * [Hello](./hello) &ndash; contains the sample files to get familiar with rollups.
+* [_datadir](./_datadir) &ndash; blockchain files
 
 ## Using Op SDK
 
@@ -31,28 +32,28 @@ Op Stack
 
 In `/mnt/d/repo/op-geth`
 ```shell
- ./build/bin/geth         
- --datadir ./datadir 
- --http         
- --http.corsdomain="*"
- --http.vhosts="*"         
- --http.addr=0.0.0.0         
- --http.api=web3,debug,eth,txpool,net,engine         
- --ws         
- --ws.addr=0.0.0.0         
- --ws.port=8546         
- --ws.origins="*"         
- --ws.api=debug,eth,txpool,net,engine         
- --syncmode=full         
- --gcmode=archive         
- --nodiscover         
- --maxpeers=0         
- --networkid=42069         
- --authrpc.vhosts="*"         
- --authrpc.addr=0.0.0.0         
- --authrpc.port=8551         
- --authrpc.jwtsecret=./jwt.txt         
- --rollup.disabletxpoolgossip=true 
+ ./build/bin/geth \
+ --datadir /mnt/d/ahmetson/superhack/_datadir \
+ --http \
+ --http.corsdomain="*" \
+ --http.vhosts="*" \
+ --http.addr=0.0.0.0 \
+ --http.api=web3,debug,eth,txpool,net,engine \
+ --ws \
+ --ws.addr=0.0.0.0 \
+ --ws.port=8546 \
+ --ws.origins="*" \
+ --ws.api=debug,eth,txpool,net,engine \
+ --syncmode=full \
+ --gcmode=archive \
+ --nodiscover \
+ --maxpeers=0 \
+ --networkid=535754 \
+ --authrpc.vhosts="*" \
+ --authrpc.addr=0.0.0.0 \
+ --authrpc.port=8551 \
+ --authrpc.jwtsecret=/mnt/d/ahmetson/superhack/superwallet-testnet-jwt.txt \
+ --rollup.disabletxpoolgossip=true \
  --ipcdisable
 ```
 
@@ -63,16 +64,15 @@ In `/mnt/d/repo/optimism/op-node`
 ```bash
 ./bin/op-node \
 --l2=http://localhost:8551 \
---l2.jwt-secret=./jwt.txt \
+--l2.jwt-secret=/mnt/d/ahmetson/superhack/superwallet-testnet-jwt.txt \
 --sequencer.enabled \
 --sequencer.l1-confs=1 \
 --verifier.l1-confs=1 \
---rollup.config=rollup.json \
+--rollup.config=superwallet-testnet-rollup.json \
 --rpc.addr=0.0.0.0 \
 --rpc.port=8547 \
---p2p.disable \
 --rpc.enable-admin \
---p2p.sequencer.key=$SEQ_KEY \
+--p2p.sequencer.key=$SEQUENCER_PRIVATE_KEY \
 --l1.rpckind=$RPC_KIND \
 --l1=$L1_RPC
 ```
@@ -93,12 +93,17 @@ In `/mnt/d/repo/optimism/op-batcher`
 --rpc.enable-admin \
 --max-channel-duration=1 \
 --l1-eth-rpc=$L1_RPC \
---private-key=$BATCHER_KEY
+--private-key=$BATCHER_PRIVATE_KEY
 ```
 
 In `/mnt/d/repo/optimism/op-proposer`
 
 ```bash
 ./bin/op-proposer \
---poll-interval=12s     --rpc.port=8560     --rollup-rpc=http/localhost:8547     --l2oo-address=$L2OO_ADDR     --private-key=$PROPOSER_KEY     --l1-eth-rpc=$L1_RPC
+--poll-interval=12s \
+--rpc.port=8560 \
+--rollup-rpc=http://localhost:8547 \
+--l2oo-address=$L2OO_ADDR \
+--private-key=$PROPOSER_PRIVATE_KEY \
+--l1-eth-rpc=$L1_RPC
 ```
