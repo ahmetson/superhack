@@ -17,15 +17,19 @@ console.log(`Hello World! App name: ${appName}`);
 
 
 async function showBalances() {
+    let chainIds = [
+        (await l1Provider.getNetwork()).chainId,
+        (await l2Provider.getNetwork()).chainId
+    ]
 
-    let balances1 = [
+    let balances = [
         await l1Provider.getBalance(l1Signer.address),
         await l2Provider.getBalance(l1Signer.address)
     ]
 
     console.log(`The '${l1Signer.address}' balance:`)
-    console.log(`\tL1: ${balances1[0]/1e18} ETH`);
-    console.log(`\tL2: ${balances1[1]/1e18} ETH`);
+    console.log(`\tL1 chain id: ${chainIds[0]}, balance: ${balances[0]/1e18} ETH`);
+    console.log(`\tL2 chain id: ${chainIds[1]}, balance: ${balances[1]/1e18} ETH`);
 }
 
 showBalances().then(console.log);
