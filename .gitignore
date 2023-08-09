@@ -3,3 +3,9 @@ hello/node_modules
 hello/deployments
 op-prime/vendor
 _datadir/geth
+_hyperlane/db
+_hyperlane/relayer_cache
+_hyperlane/signatures
+react-tutorial/node_modules
+react-tutorial/.next
+safe-hello/node_modules
