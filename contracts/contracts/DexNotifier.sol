@@ -1,85 +1,75 @@
-//SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.9;
 
-// For cross domain messages' origin
-import { ICrossDomainMessenger } from
-"@eth-optimism/contracts/libraries/bridge/ICrossDomainMessenger.sol";
+import {Router} from "@hyperlane-xyz/core/contracts/Router.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-/**
- * @title DexNotifier
- * @author MedetAhmetson
- * @notice SuperWallet's internal dex.
- */
-
-contract DexNotifier {
-    string public greeting;
-    address public l1cdm; // cross-domain-messenger
-
+// https://docs.hyperlane.xyz/docs/apis-and-sdks/building-applications/writing-contracts/router
+contract DexNotifier is Router {
     // The link from this blockchain to another address
-    mapping(address => mapping(uint256 => address)) public supperAccounts;
+    mapping(address => mapping(uint32 => address)) public superAccounts;
     mapping(address => uint256) public pools;
+    mapping(address => mapping(uint32 => address)) public superTokens;
 
-    event SetGreeting(
-        address sender,     // msg.sender
-        address origin,     // tx.origin
-        address xorigin,    // cross domain origin, if any
-        address user,       // user address, if given
-        string greeting     // The greeting
-    );
+    bytes1 public addOp = 0x01;
 
-
-    constructor(address crossChainManager) {
-        l1cdm = crossChainManager;
-        greeting = "not called yet";
+    constructor(address mailbox) {
+        __Router_initialize(mailbox);
     }
 
     /**
      * @notice Transfer token from one chain to another using the dex pool.
-     * @param chainId the target chain id where the transaction should be executed
+     * @param destination the target chain id where the transaction should be executed
      * @param amount to transfer from this blockchain
      * @param token the token type
      */
     function transferToken(
-        uint256 chainId, 
-        uint256 amount, 
-        address token,
-        address to,
-        bytes calldata data,
+        uint32 destination,
+        uint256 amount,         // we take this amount
+        address token,          // of the tokens from the user in this blockchain.
+        address safeParamTo,             // safe sdk part to which smartcontract it needs to be send
+        bytes calldata safeParamData,     // safe sdk the transaction parameters
+        bytes calldata safeSignatures
      ) external {
-        pools[token] = amount;
-        address proxyAddr = supperAccounts[msg.sender][chainId];
+        pools[token] += amount;
 
-        
+        require(IERC20(token).transferFrom(msg.sender, address(this), amount), "failed to get tokens");
+
+        // a smartcontract that keeps the pre-funded data. it's a safe wallet.
+        // we send the data to there.
+        address safeWallet = superAccounts[msg.sender][destination];
+        address tokenOnRemote = superTokens[token][destination];
+
+        // when DexNotifier on the destination handles it, it will send to proxyAddr(safe wallet) `amount` of `token`.
+        // then it will `executeTransaction`
+        bytes memory wrappedData = abi.encodePacked(addOp, safeWallet, tokenOnRemote, amount, safeParamTo, safeParamData, safeSignatures);
+
+        _dispatch(destination, wrappedData);
     }
 
-    function greet() public view returns (string memory) {
-        return greeting;
+
+    // ============ On receive functions ============
+
+    function _handle(
+        uint32 _origin,
+        bytes32 _sender,
+        bytes calldata _message
+    ) internal override {
+        (bytes1 opType,
+        address proxyAddr,
+        address token,
+        uint256 amount,
+        address safeParamTo,
+        bytes memory safeParamData,
+        bytes memory safeSignatures) = abi.decode(_message, (bytes1, address, address, uint256, address, bytes, bytes));
+        require(opType == addOp, "only add op, its for developers");
+
+        require(IERC20(token).transfer(proxyAddr, amount), "failed to send tokens to safe");
+
+        bytes memory payload = abi.encodeWithSignature("execTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes",
+            safeParamTo, 0, safeParamData, 1, 0, 0, 0, address(0), address(0), safeSignatures);
+        (bool success, bytes memory returnData) = proxyAddr.call(payload);
+        require(success);
     }
 
-    function setGreeting(string memory _greeting, address _user) public {
-        greeting = _greeting;
-        emit SetGreeting(msg.sender, tx.origin, getXorig(), _user, _greeting);
-    }
-
-
-    // Get the cross domain origin, if any
-    function getXorig() private view returns (address) {
-        // Get the cross domain messenger's address each time.
-        // This is less resource intensive than writing to storage.
-        address cdmAddr = address(0);
-
-        // Goerli
-        if (block.chainid == 11155111)
-            cdmAddr = l1cdm;
-        else if (block.chainid == 42069)
-            cdmAddr = 0x4200000000000000000000000000000000000007;
-        else revert("unsupported chain id");
-
-        // If this isn't a cross domain message
-        if (msg.sender != cdmAddr)
-            return address(0);
-
-        // If it is a cross domain message, find out where it is from
-        return ICrossDomainMessenger(cdmAddr).xDomainMessageSender();
-    }    // getXorig()
-}   // contract Greeter
+}
