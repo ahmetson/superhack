@@ -5,7 +5,7 @@ import {ethers} from 'ethers';
 // import { ContractNetworksConfig } from '@safe-global/protocol-kit'
 import {ContractNetworkConfig} from "@safe-global/protocol-kit/dist/src/types";
 import {OperationType, SafeTransactionDataPartial, TransactionOptions} from "@safe-global/safe-core-sdk-types";
-
+import {ContractInfo, getSuperWalletInfoAt} from "./deployments";
 const l1Rpc = process.env.NEXT_PUBLIC_L1_RPC!;
 const privateKey = process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY!;
 
@@ -72,22 +72,43 @@ export const isDeployed = async(safeAddress: string) => {
     return deployed;
 }
 
-export const createTx = async(safeAddress: string) => {
+const loadContract = (info: ContractInfo): ethers.utils.Interface => {
+    return new ethers.utils.Interface(info.abi);
+}
+
+export const createTx = async(to: string, amount: number, safeAddress?: string) => {
+    if (safeAddress.length == 0) {
+        safeAddress = "0x9aA406F08c02c33E3377a38d543d9C284E0fa6A6";
+    }
+
+    const chainId = await ethAdapter.getChainId()
+    let swtInfo = getSuperWalletInfoAt(chainId.toString());
+    if (!swtInfo) {
+        throw `no super wallet info at ${chainId}`;
+    }
+    let swt = loadContract(swtInfo);
+
+    let value = ethers.utils.parseEther(amount.toString()).toHexString();
+
+    // https://github.com/ethers-io/ethers.js/issues/826
+    // safe sdk requires etherjs v5.
+    //
+    // https://ethereum.stackexchange.com/questions/116761/how-to-send-erc20-erc721-tokens-using-safe-core-sdk
+    let data = swt.encodeFunctionData("transfer", [to, value]);
+
     let safe = await Safe.create({ethAdapter, safeAddress});
 
-    let to = "0xde07C361CDAAA43200550b9dBa3Bee2Df56379ab";
-    let value = ethers.utils.parseEther("0.01").toHexString(16);
     console.log(`send ${value} ETH to ${to}`);
 
     // @ts-ignore
     let txParams: SafeTransactionDataPartial = {
-        to: to,
-        data: "0x",
-        value: value,
-        operation: OperationType.DelegateCall,
+        to: swtInfo.address,
+        value: "0",
+        data: data,
+        operation: OperationType.Call,
     }
 
-    console.log(`Creating a transaction to send 0.01 ETH to ${to}`, txParams);
+    console.log(`Creating a transaction to ${amount} SWT. SWT address on ${chainId} is ${swtInfo.address}`, txParams);
 
     let safeTx = await safe.createTransaction({safeTransactionData: txParams})
     const txHash = await safe.getTransactionHash(safeTx)
@@ -104,6 +125,7 @@ export const createTx = async(safeAddress: string) => {
     let txOptions: TransactionOptions = {
 
     }
+
     const execResponse = await safe.executeTransaction(safeTx)
     console.log(`waiting for finishing`);
     const contractReceipt = await execResponse.transactionResponse.wait()
