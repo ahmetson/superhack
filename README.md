@@ -26,6 +26,14 @@ Op Stack
 - [Difference between OP EVM and Eth EVm](https://community.optimism.io/docs/developers/build/differences/#opcode-differences)
 - [Rollup Operations](https://stack.optimism.io/docs/build/operations) &ndash; how to stop your blockchain, how to start it.
 
+Deployed chains:
+- [Zora bridge](https://bridgetozora.world/) get testnet eth on zora by bridging eth from goerli.
+- [Zora testnet explorer](https://testnet.explorer.zora.energy/)
+- [Blank page (joking)](https://testnet.zora.co/) &ndash; yeah, I am joking. It's a testnet page from zora to create
+- [Zora doc](https://docs.zora.co/docs/zora-network/network#zora-network-goerli-testnet) &ndash; opposite of the main site, it's in dark, like my eyes in the dark cave.
+
+> note, zora testnet is not available on **chainlist**.
+
 ---
 
 # Running
