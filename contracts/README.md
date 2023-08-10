@@ -33,7 +33,7 @@ defined in the ABIs:
 ## Run
 Check your balance on both networks
 ```
-npx hardhat run scripts/index.ts
+npx hardhat run scripts/auth_kit.ts
 ```
 
 ### Hello World
