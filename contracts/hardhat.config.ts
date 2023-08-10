@@ -1,8 +1,8 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-import "@eth-optimism/sdk";
 import "hardhat-deploy"
 import "dotenv/config"
+import "@hyperlane-xyz/core";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.19",
