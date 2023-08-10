@@ -3,7 +3,7 @@ import Link from 'next/link';
 import styles from '../styles/Home.module.css';
 import {getSortedPosts} from "../lib/posts";
 import {createSafe, createTx, getSafeInfo} from "../lib/safe";
-import {useRef, useState} from "react";
+import {useState} from "react";
 
 export async function getStaticProps() {
   const allPostsData = getSortedPosts();
