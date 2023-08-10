@@ -1,6 +1,6 @@
 ﻿.idea
-hello/node_modules
-hello/deployments
+contracts/node_modules
+contracts/deployments
 op-prime/vendor
 _datadir/geth
 _hyperlane/db
