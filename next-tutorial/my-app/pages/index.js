@@ -15,7 +15,9 @@ export async function getStaticProps() {
 }
 
 export default function Home({allPostsData}) {
-  const [safeAddr, setSafeAddr] = useState('');
+    const [safeAddr, setSafeAddr] = useState('0x9aA406F08c02c33E3377a38d543d9C284E0fa6A6');
+    const [to, setTo] = useState('');
+    const [value, setValue] = useState(0.0);
 
   function handleSafeCreate() {
       console.log(`Handling safe create...`);
@@ -59,7 +61,12 @@ export default function Home({allPostsData}) {
             <h2>Retrieving the information about the safe</h2>
             <input type="text" value={safeAddr} onChange={(e) => setSafeAddr(e.target.value)} placeholder="Safe address" />
             <button className={styles.card} onClick={handleSafeInfo}>Print Safe info in the console</button>
-            <button className={styles.card} onClick={handleSendTx}>Send 0.01 ETH</button>
+
+            <br />
+
+            <input type="text" value={to} onChange={(e) => setTo(e.target.value)} placeholder="Address to send" />
+            <input type="number" value={value} onChange={(e) => setValue(parseFloat(e.target.value))} placeholder="Amount" />
+            <button className={styles.card} onClick={handleSendTx}>Send SWT</button>
         </section>
 
         <section>
