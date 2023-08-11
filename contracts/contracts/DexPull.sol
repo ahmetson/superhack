@@ -21,6 +21,7 @@ contract DexPull is HyperlaneConnectionClient  {
     mapping(address => mapping(uint32 => address)) public superTokens;
 
     bytes1 public transOp = 0x01;
+    bytes1 public addOp = 0x02;
     uint32 public dexPushDest;
     bytes32 public dexPush;
 
@@ -54,11 +55,34 @@ contract DexPull is HyperlaneConnectionClient  {
         mailbox.dispatch(dexPushDest, dexPush, wrappedData);
     }
 
+    // For simplicity the liquidity part doesn't use Safe wallets (YET!)
+    //
+    // For security there is the solution, chain order matters.
+    // always start from one chain.
+    // then make a 4 rounds: source -> swt -> dst -> swt.
+    function addLiquidity(address _token0, uint32 _destination, uint32 _token1, uint _amount0, uint _amount1) external {
+        IERC20(_token0).transferFrom(msg.sender, address(this), _amount0);
+
+        bytes memory wrappedData = abi.encodePacked(
+            addOp,
+            msg.sender,
+            _token1,
+            _destination,
+            _amount0,
+            _amount1
+        );
+
+        mailbox.dispatch(dexPushDest, dexPush, wrappedData);
+    }
+
     // ============ On receive functions ============
 
     // The DexPull acts as the destination
     function handle(uint32 _origin, bytes32 _sender, bytes calldata _message) external onlyMailbox {
-        (bytes1 opType,
+        bytes1 opType = _message[0];
+
+        if (opType == transOp) {
+            (,
             address user,
             address token,
             uint256 amount,
@@ -66,9 +90,19 @@ contract DexPull is HyperlaneConnectionClient  {
             bytes memory safeParamData,
             bytes memory safeSignatures) = abi.decode(_message, (bytes1, address, address, uint256, address, bytes, bytes));
 
-        if (opType == transOp) {
-            continueTransfer(user, token, amount, safeParamTo, safeParamData, safeSignatures);
+        continueTransfer(user, token, amount, safeParamTo, safeParamData, safeSignatures);
+        } else if (opType == addOp) {
+            (, address user,
+            address token,
+            uint amount) = abi.decode(_message, (bytes1, address, address, uint));
+
+            continueAdd(user, token, amount);
         }
+    }
+
+    // maybe it should notify back the client about valid approve.
+    function continueAdd(address user, address token, uint256 amount) internal {
+        require(IERC20(token).transferFrom(user, address(this), amount), "approve the dex pull");
     }
 
     // send tokens to the receipt in this chain.

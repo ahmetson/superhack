@@ -4,11 +4,12 @@ pragma solidity ^0.8.9;
 import {HyperlaneConnectionClient} from "@hyperlane-xyz/core/contracts/HyperlaneConnectionClient.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {TypeCasts} from "@hyperlane-xyz/core/contracts/libs/TypeCasts.sol";
+import "./Dex.sol";
 
 /**
-A token manager that seats in the SuperWallet chain. For securing the transactions made by SuperWallet.
+A token manager that seats in the SuperWallet chain. For securing the transactions made by SuperWallet users.
 */
-contract DexPush is HyperlaneConnectionClient  {
+contract DexPush is HyperlaneConnectionClient, Dex  {
     struct SuperTransfer {
         uint32 destination;
         uint256 amount;
@@ -16,6 +17,14 @@ contract DexPush is HyperlaneConnectionClient  {
         address safeParamTo;             // safe sdk part to which smartcontract it needs to be send
         bytes safeParamData;     // safe sdk the transaction parameters
         bytes safeSignatures;
+    }
+
+    struct SuperAdd {
+        uint32 destination;
+        uint32 source;
+        uint amount0;   // index 0 is from the source
+        uint amount1;   // index 1 is from the destination
+        uint supply0;
     }
 
     // The link from this blockchain to another address
@@ -34,6 +43,7 @@ contract DexPush is HyperlaneConnectionClient  {
     mapping(uint32 => mapping(address => address)) public sourceToSwt;
 
     bytes1 public transferOp = 0x01;
+    bytes1 public addOp = 0x02;
 
     constructor(address mailbox) {
         __HyperlaneConnectionClient_initialize(mailbox);
@@ -123,9 +133,11 @@ contract DexPush is HyperlaneConnectionClient  {
         bytes32 _sender,
         bytes memory _message
     ) external onlyMailbox {
+        bytes1 opType = _message[0];
+
         // transferOp, sourceSender, token, amount
-        (bytes1 opType, address sourceSender) = abi.decode(_message, (bytes1, address));
         if (opType == transferOp) {
+            (, address sourceSender) = abi.decode(_message, (bytes1, address));
             address swtAcc = sourceToSwt[_origin][sourceSender];
             SuperTransfer memory superTransfer = superTransfers[swtAcc][_origin];
 
@@ -133,6 +145,44 @@ contract DexPush is HyperlaneConnectionClient  {
             _transferToDestination(swtAcc, superTransfer);
 
             delete superTransfers[swtAcc][_origin];
+        } else if (opType == addOp) {
+            (,
+            address sourceSender,
+            uint32 tokenId,
+            uint32 destination,
+            uint amount0,
+            uint amount1) = abi.decode(_message, (bytes1, address, uint32, uint32, uint, uint));
+
+            // it doesn't track the deflationary tokens YET
+            uint d0 = amount0;
+            uint d1 = amount1;
+
+            uint shares = 0;
+            if (totalSupply > 0) {
+                shares = ((d0 + d1) * totalSupply) / (reserve0 + reserve1);
+            } else {
+                shares = d0 + d1;
+            }
+
+            require(shares > 0, "shares = 0");
+            address swtAcc = sourceToSwt[_origin][sourceSender];
+            _mint(swtAcc, shares);
+            _update(reserve0 + d0, reserve1 + d1);
+
+            // a smartcontract that keeps the pre-funded data. it's a safe wallet.
+            // we send the data to there.
+            address safeWallet = superAccounts[swtAcc][destination];
+            address tokenOnRemote = superTokens[tokenId][destination];
+
+            // transfer to the destination to withdraw some token
+            bytes memory wrappedData = abi.encodePacked(
+                addOp,
+                safeWallet,
+                tokenOnRemote,
+                amount1);
+
+            mailbox.dispatch(destination, superDex[destination], wrappedData);
+
         }
     }
 

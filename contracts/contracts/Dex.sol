@@ -2,14 +2,11 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import {HyperlaneConnectionClient} from "@hyperlane-xyz/core/contracts/HyperlaneConnectionClient.sol";
-import {TypeCasts} from "@hyperlane-xyz/core/contracts/libs/TypeCasts.sol";
 
 /**
 Dex in the simplest form.
 */
-contract Dex is HyperlaneConnectionClient  {
+contract Dex  {
     IERC20 public token0;
     IERC20 public token1;
 
@@ -19,23 +16,17 @@ contract Dex is HyperlaneConnectionClient  {
     uint public totalSupply;
     mapping(address => uint) public balanceOf;
 
-    // we should move it to CreateLiquidity
-    constructor(address _token0, address _token1) {
-        token0 = IERC20(_token0);
-        token1 = IERC20(_token1);
-    }
-
-    function _mint(address _to, uint _amount) private {
+    function _mint(address _to, uint _amount) internal {
         balanceOf[_to] += _amount;
         totalSupply += _amount;
     }
 
-    function _burn(address _from, uint _amount) private {
+    function _burn(address _from, uint _amount) internal {
         balanceOf[_from] -= _amount;
         totalSupply -= _amount;
     }
 
-    function _update(uint _reserve0, uint _reserve1) private {
+    function _update(uint _reserve0, uint _reserve1) internal {
         reserve0 = _reserve0;
         reserve1 = _reserve1;
     }
