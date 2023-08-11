@@ -20,7 +20,7 @@ contract DexPull is HyperlaneConnectionClient  {
     mapping(address => uint256) public pools;
     mapping(address => mapping(uint32 => address)) public superTokens;
 
-    bytes1 public addOp = 0x01;
+    bytes1 public transOp = 0x01;
     uint32 public dexPushDest;
     bytes32 public dexPush;
 
@@ -48,7 +48,7 @@ contract DexPull is HyperlaneConnectionClient  {
 
         // send it to the dex push.
         // dex push should have the parameters of the request to send in destination.
-        bytes memory wrappedData = abi.encodePacked(addOp, msg.sender);
+        bytes memory wrappedData = abi.encodePacked(transOp, msg.sender);
 
         // Notify the SuperWallet that tokens were deducted
         mailbox.dispatch(dexPushDest, dexPush, wrappedData);
@@ -66,7 +66,7 @@ contract DexPull is HyperlaneConnectionClient  {
             bytes memory safeParamData,
             bytes memory safeSignatures) = abi.decode(_message, (bytes1, address, address, uint256, address, bytes, bytes));
 
-        if (opType == addOp) {
+        if (opType == transOp) {
             continueTransfer(user, token, amount, safeParamTo, safeParamData, safeSignatures);
         }
     }

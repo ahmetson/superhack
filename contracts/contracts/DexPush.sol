@@ -33,7 +33,7 @@ contract DexPush is HyperlaneConnectionClient  {
     // network => networkAcc => swtAcc;
     mapping(uint32 => mapping(address => address)) public sourceToSwt;
 
-    bytes1 public addOp = 0x01;
+    bytes1 public transferOp = 0x01;
 
     constructor(address mailbox) {
         __HyperlaneConnectionClient_initialize(mailbox);
@@ -80,12 +80,14 @@ contract DexPush is HyperlaneConnectionClient  {
 
         SuperTransfer memory superTransfer = SuperTransfer(destination, amount, tokenId, safeParamTo, safeParamData, safeSignatures);
         if (amount > 0) {
-// user => source => transfer
+            // user => source => transfer
             superTransfers[msg.sender][source] = superTransfer;
         } else {
             _transferToDestination(msg.sender, superTransfer);
         }
     }
+
+
 
     function _transferToDestination(address swtAcc, SuperTransfer memory superTransfer) internal {
         // a smartcontract that keeps the pre-funded data. it's a safe wallet.
@@ -96,7 +98,7 @@ contract DexPush is HyperlaneConnectionClient  {
         // when DexPush.sol on the destination handles it, it will send to proxyAddr(safe wallet) `amount` of `token`.
         // then it will `executeTransaction`
         bytes memory wrappedData = abi.encodePacked(
-            addOp,
+            transferOp,
             safeWallet,
             tokenOnRemote,
             superTransfer.amount,
@@ -121,17 +123,17 @@ contract DexPush is HyperlaneConnectionClient  {
         bytes32 _sender,
         bytes memory _message
     ) external onlyMailbox {
-        // addOp, sourceSender, token, amount
+        // transferOp, sourceSender, token, amount
         (bytes1 opType, address sourceSender) = abi.decode(_message, (bytes1, address));
-        require(opType == addOp, "only add op, its for developers");
+        if (opType == transferOp) {
+            address swtAcc = sourceToSwt[_origin][sourceSender];
+            SuperTransfer memory superTransfer = superTransfers[swtAcc][_origin];
 
-        address swtAcc = sourceToSwt[_origin][sourceSender];
-        SuperTransfer memory superTransfer = superTransfers[swtAcc][_origin];
+            require(superTransfer.destination > 0, "not cross-chain transfer");
+            _transferToDestination(swtAcc, superTransfer);
 
-        require(superTransfer.destination > 0, "not cross-chain transfer");
-        _transferToDestination(swtAcc, superTransfer);
-
-        delete superTransfers[swtAcc][_origin];
+            delete superTransfers[swtAcc][_origin];
+        }
     }
 
 }
