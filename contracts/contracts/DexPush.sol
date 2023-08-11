@@ -5,12 +5,33 @@ import {HyperlaneConnectionClient} from "@hyperlane-xyz/core/contracts/Hyperlane
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {TypeCasts} from "@hyperlane-xyz/core/contracts/libs/TypeCasts.sol";
 
+/**
+A token manager that seats in the SuperWallet chain. For securing the transactions made by SuperWallet.
+*/
 contract DexPush is HyperlaneConnectionClient  {
+    struct SuperTransfer {
+        uint32 destination;
+        uint256 amount;
+        uint32 tokenId;          // of the tokens from the user in this blockchain.
+        address safeParamTo;             // safe sdk part to which smartcontract it needs to be send
+        bytes safeParamData;     // safe sdk the transaction parameters
+        bytes safeSignatures;
+    }
+
     // The link from this blockchain to another address
+    // swtAccount => destination => user's address there
     mapping(address => mapping(uint32 => address)) public superAccounts;
     mapping(address => uint256) public pools;
-    mapping(address => mapping(uint32 => address)) public superTokens;
+    // tokenId => hyperlaneChainId => token address
+    mapping(uint32 => mapping(uint32 => address)) public superTokens;
+    // address of the dex pull in the remote account
+    // destination id => DexPull address
     mapping(uint32 => bytes32) public superDex;
+    // user => source => transfer
+    mapping(address => mapping(uint32 => SuperTransfer)) public superTransfers;
+    // reverse of superAccounts to find the user by it's name on another chain
+    // network => networkAcc => swtAcc;
+    mapping(uint32 => mapping(address => address)) public sourceToSwt;
 
     bytes1 public addOp = 0x01;
 
@@ -18,46 +39,72 @@ contract DexPush is HyperlaneConnectionClient  {
         __HyperlaneConnectionClient_initialize(mailbox);
     }
 
-    // make it secure
+    // must be restricted.
     function setSuperAccount(address account, uint32 networkId, address networkAccount) external {
         superAccounts[account][networkId] = networkAccount;
+        sourceToSwt[networkId][networkAccount] = account;
     }
 
-    function setSuperToken(address token, uint32 networkId, address networkToken) external {
-        superTokens[token][networkId] = networkToken;
+    // must be restricted.
+    function setSuperToken(uint32 tokenId, uint32 networkId, address networkToken) external {
+        superTokens[tokenId][networkId] = networkToken;
     }
+
+    // must be restricted.
     function setSuperDex(uint32 networkId, address networkDex) external {
         superDex[networkId] = TypeCasts.addressToBytes32(networkDex);
     }
 
     /**
+     * Start the transaction.
+     *
+     * Destination is the chain where the receipt will receive tokens.
+     *
+     * If the amount is 0, it will not wait for the message, instead it will send directly.
+     *
      * @notice Transfer token from one chain to another using the dex pool.
      * @param destination the target chain id where the transaction should be executed
      * @param amount to transfer from this blockchain
-     * @param token the token type
+     * @param tokenId the token type
      */
     function transferToken(
-        uint32 destination,
-        uint256 amount,         // we take this amount
-        address token,          // of the tokens from the user in this blockchain.
+        uint32 source,              // we should receive message from this blockchain about token deduction
+        uint32 tokenId,          // of the tokens from the user in this blockchain.
+        uint32 destination,         // we should send message to here about token transfer
+        uint256 amount,
         address safeParamTo,             // safe sdk part to which smartcontract it needs to be send
         bytes calldata safeParamData,     // safe sdk the transaction parameters
         bytes calldata safeSignatures
      ) external {
-        pools[token] += amount;
+        require(superTransfers[msg.sender][source].destination > 0, "previous tx is pending");
 
-        require(IERC20(token).transferFrom(msg.sender, address(this), amount), "failed to get tokens");
+        SuperTransfer memory superTransfer = SuperTransfer(destination, amount, tokenId, safeParamTo, safeParamData, safeSignatures);
+        if (amount > 0) {
+// user => source => transfer
+            superTransfers[msg.sender][source] = superTransfer;
+        } else {
+            _transferToDestination(msg.sender, superTransfer);
+        }
+    }
 
+    function _transferToDestination(address swtAcc, SuperTransfer memory superTransfer) internal {
         // a smartcontract that keeps the pre-funded data. it's a safe wallet.
         // we send the data to there.
-        address safeWallet = superAccounts[msg.sender][destination];
-        address tokenOnRemote = superTokens[token][destination];
+        address safeWallet = superAccounts[swtAcc][superTransfer.destination];
+        address tokenOnRemote = superTokens[superTransfer.tokenId][superTransfer.destination];
 
         // when DexPush.sol on the destination handles it, it will send to proxyAddr(safe wallet) `amount` of `token`.
         // then it will `executeTransaction`
-        bytes memory wrappedData = abi.encodePacked(addOp, safeWallet, tokenOnRemote, amount, safeParamTo, safeParamData, safeSignatures);
+        bytes memory wrappedData = abi.encodePacked(
+            addOp,
+            safeWallet,
+            tokenOnRemote,
+            superTransfer.amount,
+            superTransfer.safeParamTo,
+            superTransfer.safeParamData,
+            superTransfer.safeSignatures);
 
-        mailbox.dispatch(destination, superDex[destination], wrappedData);
+        mailbox.dispatch(superTransfer.destination, superDex[superTransfer.destination], wrappedData);
     }
 
 
@@ -74,21 +121,17 @@ contract DexPush is HyperlaneConnectionClient  {
         bytes32 _sender,
         bytes memory _message
     ) external onlyMailbox {
-        (bytes1 opType,
-        address proxyAddr,
-        address token,
-        uint256 amount,
-        address safeParamTo,
-        bytes memory safeParamData,
-        bytes memory safeSignatures) = abi.decode(_message, (bytes1, address, address, uint256, address, bytes, bytes));
+        // addOp, sourceSender, token, amount
+        (bytes1 opType, address sourceSender) = abi.decode(_message, (bytes1, address));
         require(opType == addOp, "only add op, its for developers");
 
-        require(IERC20(token).transfer(proxyAddr, amount), "failed to send tokens to safe");
+        address swtAcc = sourceToSwt[_origin][sourceSender];
+        SuperTransfer memory superTransfer = superTransfers[swtAcc][_origin];
 
-        bytes memory payload = abi.encodeWithSignature("execTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes",
-            safeParamTo, 0, safeParamData, 1, 0, 0, 0, address(0), address(0), safeSignatures);
-        (bool success, bytes memory returnData) = proxyAddr.call(payload);
-        require(success);
+        require(superTransfer.destination > 0, "not cross-chain transfer");
+        _transferToDestination(swtAcc, superTransfer);
+
+        delete superTransfers[swtAcc][_origin];
     }
 
 }
