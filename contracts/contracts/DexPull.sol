@@ -59,7 +59,7 @@ contract DexPull is HyperlaneConnectionClient  {
     // ============ On receive functions ============
 
     // The DexPull acts as the source
-    function handle(uint32 _origin, bytes32 _sender, bytes calldata _message) external override {
+    function handle(uint32 _origin, bytes32 _sender, bytes calldata _message) external onlyMailbox {
         (bytes1 opType,
             address user,
             address token,
