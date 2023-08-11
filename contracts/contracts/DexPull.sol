@@ -35,7 +35,6 @@ contract DexPull is HyperlaneConnectionClient  {
     /**
      * DexPull acts as source.
      * @notice Transfer token from one chain to another using the dex pool (middle chain).
-     * @param destination the target chain id where the transaction should be executed
      * @param amount to transfer from this blockchain
      * @param token the token type
      */
