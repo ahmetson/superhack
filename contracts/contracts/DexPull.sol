@@ -33,13 +33,13 @@ contract DexPull is HyperlaneConnectionClient  {
     }
 
     /**
+     * DexPull acts as source.
      * @notice Transfer token from one chain to another using the dex pool (middle chain).
      * @param destination the target chain id where the transaction should be executed
      * @param amount to transfer from this blockchain
      * @param token the token type
      */
     function transferToken(
-        uint32 destination,
         uint256 amount,         // we take this amount
         address token          // of the tokens from the user in this blockchain.
     ) external {
@@ -49,10 +49,9 @@ contract DexPull is HyperlaneConnectionClient  {
 
         // send it to the dex push.
         // dex push should have the parameters of the request to send in destination.
-        //
-        //
-        bytes memory wrappedData = abi.encodePacked(addOp, msg.sender, token, amount);
+        bytes memory wrappedData = abi.encodePacked(addOp, msg.sender);
 
+        // Notify the SuperWallet that tokens were deducted
         mailbox.dispatch(dexPushDest, dexPush, wrappedData);
     }
 
