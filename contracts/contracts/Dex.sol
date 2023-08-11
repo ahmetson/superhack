@@ -39,7 +39,7 @@ contract Dex  {
             total supply s should be proportional to increase from L to L + a (L + a) / L = (T + s) / T s =
             a * T / L
      */
-    function addLiquidity(uint _amount0, uint _amount1) external returns(uint shares) {
+    function addLiquidity(uint _amount0, uint _amount1) internal returns(uint shares) {
         // transfer through the dex pull/push
         token0.transferFrom(msg.sender, address(this), _amount0);
         token1.transferFrom(msg.sender, address(this), _amount1);
@@ -62,7 +62,7 @@ contract Dex  {
         _update(bal0, bal1);
     }
 
-    function swap(address _tokenIn, uint _amountIn) external returns (uint amountOut) {
+    function swap(address _tokenIn, uint _amountIn) internal returns (uint amountOut) {
         require(_tokenIn == address(token0) || _tokenIn == address(token1),
             "invalid token");
 

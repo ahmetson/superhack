@@ -84,13 +84,12 @@ contract DexPull is HyperlaneConnectionClient  {
     // it will not work if there are multiple users, unless we won't set the strict order of blockchains.
     //
     // todo: isToken0 should be calculated in the DexPush.
-    function swap(address _token0, uint32 _token0Id, uint32 _token1, uint32 _destination, uint _amountIn, bool isToken0) external {
+    function swap(address _token0, uint32 _token1, uint32 _destination, uint _amountIn, bool isToken0) external {
         IERC20(_token0).transferFrom(msg.sender, address(this), _amountIn);
 
         bytes memory wrappedData = abi.encodePacked(
             swapOp,
             msg.sender,
-            _token0Id,
             _token1,
             _destination,
             _amountIn,
