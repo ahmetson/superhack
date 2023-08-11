@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Manager!",
+  "description": "Manage the tabs for Chrome Dev Docs",
+  "version": "1.0",
+  "action": {
+    "default_popup": "pages/popup.html"
+  },
+  "host_permissions": [
+    "https://developer.chrome.com/*"
+  ],
+  "permissions": [
+    "tabGroups"
+  ]
+}
