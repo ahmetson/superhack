@@ -5,7 +5,7 @@ import {HyperlaneConnectionClient} from "@hyperlane-xyz/core/contracts/Hyperlane
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {TypeCasts} from "@hyperlane-xyz/core/contracts/libs/TypeCasts.sol";
 
-contract DexNotifier is HyperlaneConnectionClient  {
+contract DexPush is HyperlaneConnectionClient  {
     // The link from this blockchain to another address
     mapping(address => mapping(uint32 => address)) public superAccounts;
     mapping(address => uint256) public pools;
@@ -53,7 +53,7 @@ contract DexNotifier is HyperlaneConnectionClient  {
         address safeWallet = superAccounts[msg.sender][destination];
         address tokenOnRemote = superTokens[token][destination];
 
-        // when DexNotifier on the destination handles it, it will send to proxyAddr(safe wallet) `amount` of `token`.
+        // when DexPush.sol on the destination handles it, it will send to proxyAddr(safe wallet) `amount` of `token`.
         // then it will `executeTransaction`
         bytes memory wrappedData = abi.encodePacked(addOp, safeWallet, tokenOnRemote, amount, safeParamTo, safeParamData, safeSignatures);
 
