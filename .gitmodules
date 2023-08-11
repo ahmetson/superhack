@@ -1,6 +1,13 @@
 [submodule "safe-infrastructure"]
 	path = safe-infrastructure
 	url = https://github.com/safe-global/safe-infrastructure.git
+
+[submodule "hyperlane-deployer"]
+	path = hyperlane-deployer
+	url = https://github.com/hyperlane-xyz/hyperlane-deploy.git
+[submodule "hyperlane"]
+	path = hyperlane
+	url = https://github.com/hyperlane-xyz/hyperlane-monorepo.git
 [submodule "explorer"]
 	path = explorer
 	url = https://github.com/blockscout/blockscout.git
