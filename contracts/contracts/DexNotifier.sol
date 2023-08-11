@@ -17,6 +17,14 @@ contract DexNotifier is Router {
         __Router_initialize(mailbox);
     }
 
+    function setSuperAccount(address account, uint32 networkId, address networkAccount) external onlyOwner {
+        superAccounts[account][networkId] = networkAccount;
+    }
+
+    function setSuperToken(address token, uint32 networkId, address networkToken) external onlyOwner {
+        superTokens[token][networkId] = networkToken;
+    }
+
     /**
      * @notice Transfer token from one chain to another using the dex pool.
      * @param destination the target chain id where the transaction should be executed
