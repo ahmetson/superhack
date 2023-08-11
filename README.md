@@ -44,6 +44,15 @@ The ChainId of SuperWallet: **535754**
 
 
 ---
+
+Bridges:
+* https://testnetbridge.com/
+* https://app.optimism.io/bridge/deposit
+* https://bridgetozora.world/
+* https://goerli-bridge.base.org/
+* https://bridge.mode.network/
+
+---
 # Deployment
 In order to run the code, you would need:
 * Run the SuperWallet network
