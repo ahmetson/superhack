@@ -35,6 +35,11 @@ const config: HardhatUserConfig = {
       chainId: 420,
       url: "https://goerli.optimism.io",
       accounts: [process.env.ADMIN_PRIVATE_KEY],
+    },
+    modeTestnet: {
+      chainId: 919,
+      url: "https://sepolia.mode.network",
+      accounts: [process.env.ADMIN_PRIVATE_KEY],
     }
   }
 };
