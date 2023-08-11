@@ -3,9 +3,10 @@ pragma solidity ^0.8.9;
 
 import {Router} from "@hyperlane-xyz/core/contracts/Router.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 // https://docs.hyperlane.xyz/docs/apis-and-sdks/building-applications/writing-contracts/router
-contract DexNotifier is Router {
+contract DexNotifier is Router, Ownable {
     // The link from this blockchain to another address
     mapping(address => mapping(uint32 => address)) public superAccounts;
     mapping(address => uint256) public pools;
