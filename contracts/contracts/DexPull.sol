@@ -22,6 +22,7 @@ contract DexPull is HyperlaneConnectionClient  {
 
     bytes1 public transOp = 0x01;
     bytes1 public addOp = 0x02;
+    bytes1 public swapOp = 0x03;
     uint32 public dexPushDest;
     bytes32 public dexPush;
 
@@ -75,6 +76,30 @@ contract DexPull is HyperlaneConnectionClient  {
         mailbox.dispatch(dexPushDest, dexPush, wrappedData);
     }
 
+    // make sure that it's called from the sorted blockchains.
+    //
+    // @warning doesn't support deflationary tokens.
+    //
+    // for now for showcase it supports swap initiation from any chains.
+    // it will not work if there are multiple users, unless we won't set the strict order of blockchains.
+    //
+    // todo: isToken0 should be calculated in the DexPush.
+    function swap(address _token0, uint32 _token0Id, uint32 _token1, uint32 _destination, uint _amountIn, bool isToken0) external {
+        IERC20(_token0).transferFrom(msg.sender, address(this), _amountIn);
+
+        bytes memory wrappedData = abi.encodePacked(
+            swapOp,
+            msg.sender,
+            _token0Id,
+            _token1,
+            _destination,
+            _amountIn,
+            isToken0
+        );
+
+        mailbox.dispatch(dexPushDest, dexPush, wrappedData);
+    }
+
     // ============ On receive functions ============
 
     // The DexPull acts as the destination
@@ -97,7 +122,17 @@ contract DexPull is HyperlaneConnectionClient  {
             uint amount) = abi.decode(_message, (bytes1, address, address, uint));
 
             continueAdd(user, token, amount);
+        } else if (opType == swapOp) {
+            (, address user,
+            address token,
+            uint amount) = abi.decode(_message, (bytes1, address, address, uint));
+
+            continueSwap(user, token, amount);
         }
+    }
+
+    function continueSwap(address user, address token, uint256 amount) internal {
+        require(IERC20(token).transfer(user, amount), "failed to swap to destination");
     }
 
     // maybe it should notify back the client about valid approve.

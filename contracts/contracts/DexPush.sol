@@ -44,6 +44,7 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
 
     bytes1 public transferOp = 0x01;
     bytes1 public addOp = 0x02;
+    bytes1 public swapOp = 0x03;
 
     constructor(address mailbox) {
         __HyperlaneConnectionClient_initialize(mailbox);
@@ -98,7 +99,6 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
     }
 
 
-
     function _transferToDestination(address swtAcc, SuperTransfer memory superTransfer) internal {
         // a smartcontract that keeps the pre-funded data. it's a safe wallet.
         // we send the data to there.
@@ -119,6 +119,67 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
         mailbox.dispatch(superTransfer.destination, superDex[superTransfer.destination], wrappedData);
     }
 
+    // it doesn't track the deflationary tokens YET
+    function _addLiquidity(uint d0, uint d1, address swtAcc, uint32 tokenId, uint32 destination) private {
+        uint shares = 0;
+        if (totalSupply > 0) {
+            shares = ((d0 + d1) * totalSupply) / (reserve0 + reserve1);
+        } else {
+            shares = d0 + d1;
+        }
+
+        require(shares > 0, "shares = 0");
+        _mint(swtAcc, shares);
+        _update(reserve0 + d0, reserve1 + d1);
+
+        // a smartcontract that keeps the pre-funded data. it's a safe wallet.
+        // we send the data to there.
+        address safeWallet = superAccounts[swtAcc][destination];
+        address tokenOnRemote = superTokens[tokenId][destination];
+
+        // transfer to the destination to withdraw some token
+        bytes memory wrappedData = abi.encodePacked(
+            addOp,
+            safeWallet,
+            tokenOnRemote,
+            d1);
+
+        mailbox.dispatch(destination, superDex[destination], wrappedData);
+    }
+
+    function _swap(uint32 _origin, bytes memory _message) private {
+        (,
+            address sourceSender,
+            uint32 sourceTokenId,
+            uint32 destTokenId,
+            uint32 destination,
+            uint amountIn,
+            bool isToken0) = abi.decode(_message, (bytes1, address, uint32, uint32, uint32, uint, bool));
+
+        (uint resIn, uint resOut) = isToken0 ?
+            (reserve0, reserve1) :
+            (reserve1, reserve0);
+
+
+        uint amountOut = (amountIn * 997) / 1000;
+
+        isToken0 ?
+            _update(resIn + amountIn, resOut - amountOut) :
+            _update(resOut - amountOut, resIn + amountIn);
+
+        address swtAcc = sourceToSwt[_origin][sourceSender];
+        address safeWallet = superAccounts[swtAcc][destination];
+        address tokenOnRemote = superTokens[destTokenId][destination];
+
+        // transfer to the destination to withdraw some token
+        bytes memory wrappedData = abi.encodePacked(
+            swapOp,
+            safeWallet,
+            tokenOnRemote,
+            amountOut);
+
+        mailbox.dispatch(destination, superDex[destination], wrappedData);
+    }
 
     // ============ On receive functions ============
 
@@ -146,43 +207,15 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
 
             delete superTransfers[swtAcc][_origin];
         } else if (opType == addOp) {
-            (,
-            address sourceSender,
-            uint32 tokenId,
+            (,address sourceSender,
+            uint32 tokenId,     // destination token id
             uint32 destination,
             uint amount0,
             uint amount1) = abi.decode(_message, (bytes1, address, uint32, uint32, uint, uint));
 
-            // it doesn't track the deflationary tokens YET
-            uint d0 = amount0;
-            uint d1 = amount1;
-
-            uint shares = 0;
-            if (totalSupply > 0) {
-                shares = ((d0 + d1) * totalSupply) / (reserve0 + reserve1);
-            } else {
-                shares = d0 + d1;
-            }
-
-            require(shares > 0, "shares = 0");
-            address swtAcc = sourceToSwt[_origin][sourceSender];
-            _mint(swtAcc, shares);
-            _update(reserve0 + d0, reserve1 + d1);
-
-            // a smartcontract that keeps the pre-funded data. it's a safe wallet.
-            // we send the data to there.
-            address safeWallet = superAccounts[swtAcc][destination];
-            address tokenOnRemote = superTokens[tokenId][destination];
-
-            // transfer to the destination to withdraw some token
-            bytes memory wrappedData = abi.encodePacked(
-                addOp,
-                safeWallet,
-                tokenOnRemote,
-                amount1);
-
-            mailbox.dispatch(destination, superDex[destination], wrappedData);
-
+            _addLiquidity(amount0, amount1, sourceToSwt[_origin][sourceSender], tokenId, destination);
+        } else if (opType == swapOp) {
+            _swap(_origin, _message);
         }
     }
 
