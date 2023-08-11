@@ -1,6 +1,3 @@
 [submodule "safe-infrastructure"]
 	path = safe-infrastructure
 	url = https://github.com/safe-global/safe-infrastructure.git
-[submodule "web3-provider"]
-	path = web3-provider
-	url = https://github.com/fireblocks/fireblocks-web3-provider.git
