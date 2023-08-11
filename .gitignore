@@ -9,3 +9,5 @@ _hyperlane/signatures
 react-tutorial/node_modules
 react-tutorial/.next
 safe-hello/node_modules
+next-tutorial/my-app/.yarn
+node_modules
