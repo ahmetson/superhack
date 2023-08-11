@@ -57,7 +57,7 @@ contract DexPull is HyperlaneConnectionClient  {
 
     // ============ On receive functions ============
 
-    // The DexPull acts as the source
+    // The DexPull acts as the destination
     function handle(uint32 _origin, bytes32 _sender, bytes calldata _message) external onlyMailbox {
         (bytes1 opType,
             address user,
@@ -72,8 +72,11 @@ contract DexPull is HyperlaneConnectionClient  {
         }
     }
 
+    // send tokens to the receipt in this chain.
     function continueTransfer(address user, address token, uint256 amount, address safeParamTo, bytes memory safeParamData, bytes memory safeSignatures) internal {
-        require(IERC20(token).transfer(user, amount), "failed to send tokens to safe");
+        if (amount > 0) {
+            require(IERC20(token).transfer(user, amount), "failed to send tokens to safe");
+        }
 
         bytes memory payload = abi.encodeWithSignature("execTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes",
             safeParamTo, 0, safeParamData, 1, 0, 0, 0, address(0), address(0), safeSignatures);
