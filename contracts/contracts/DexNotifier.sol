@@ -1,29 +1,33 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-import {Router} from "@hyperlane-xyz/core/contracts/Router.sol";
+import {HyperlaneConnectionClient} from "@hyperlane-xyz/core/contracts/HyperlaneConnectionClient.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import {TypeCasts} from "@hyperlane-xyz/core/contracts/libs/TypeCasts.sol";
 
-// https://docs.hyperlane.xyz/docs/apis-and-sdks/building-applications/writing-contracts/router
-contract DexNotifier is Router, Ownable {
+contract DexNotifier is HyperlaneConnectionClient  {
     // The link from this blockchain to another address
     mapping(address => mapping(uint32 => address)) public superAccounts;
     mapping(address => uint256) public pools;
     mapping(address => mapping(uint32 => address)) public superTokens;
+    mapping(uint32 => bytes32) public superDex;
 
     bytes1 public addOp = 0x01;
 
     constructor(address mailbox) {
-        __Router_initialize(mailbox);
+        __HyperlaneConnectionClient_initialize(mailbox);
     }
 
-    function setSuperAccount(address account, uint32 networkId, address networkAccount) external onlyOwner {
+    // make it secure
+    function setSuperAccount(address account, uint32 networkId, address networkAccount) external {
         superAccounts[account][networkId] = networkAccount;
     }
 
-    function setSuperToken(address token, uint32 networkId, address networkToken) external onlyOwner {
+    function setSuperToken(address token, uint32 networkId, address networkToken) external {
         superTokens[token][networkId] = networkToken;
+    }
+    function setSuperDex(uint32 networkId, address networkDex) external {
+        superDex[networkId] = TypeCasts.addressToBytes32(networkDex);
     }
 
     /**
@@ -53,17 +57,23 @@ contract DexNotifier is Router, Ownable {
         // then it will `executeTransaction`
         bytes memory wrappedData = abi.encodePacked(addOp, safeWallet, tokenOnRemote, amount, safeParamTo, safeParamData, safeSignatures);
 
-        _dispatch(destination, wrappedData);
+        mailbox.dispatch(destination, superDex[destination], wrappedData);
     }
 
 
     // ============ On receive functions ============
 
-    function _handle(
+    /**
+   * @notice Emits a HelloWorld event upon receipt of an interchain message
+   * @param _origin The chain ID from which the message was sent
+   * @param _sender The address that sent the message
+   * @param _message The contents of the message
+   */
+    function handle(
         uint32 _origin,
         bytes32 _sender,
-        bytes calldata _message
-    ) internal override {
+        bytes memory _message
+    ) external onlyMailbox {
         (bytes1 opType,
         address proxyAddr,
         address token,
