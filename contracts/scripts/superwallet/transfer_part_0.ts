@@ -12,14 +12,14 @@
 import { ethers, network } from "hardhat";
 import 'dotenv/config'
 import {transferParams} from "./transfer_params";
+import {contractNetworks} from "../../../superwallet/lib/deployments";
 
+// Call is source and destination chains.
+// it approves the DexPull to transfer user's tokens
 async function main() {
-    // goerli
-    let dexPullAddr = "0x854b1CB04296594427db0f7e96bcCBC35a05638B";
+    console.log(`Network: ${network.name}, `, Object.keys(contractNetworks[network.name]));
+    let dexPullAddr = contractNetworks[network.name].contracts.DexPull.address;
     let tokenAddr = transferParams.sourceTokenAddr;
-    // base
-    // let dexPullAddr = "0x662dDF02cbf5A6CA8aAE237cAE7dC5BBDB06D057";
-    // let tokenAddr = transferParams.destinationTokenAddr;
 
     // 100k SWT
     let totalAmountWei = "0x152D02C7E14AF6800000";
