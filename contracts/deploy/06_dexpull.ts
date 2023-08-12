@@ -24,6 +24,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         from: deployer,
         args: [mailbox, pushAddr, pushDomain],
         log: true,
+        // gasPrice and gasLimit are required by base network.
+        gasPrice: "2000000000", //https://eth-converter.com/ use it to convert Gwei to Wei
         autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
     });
 };
