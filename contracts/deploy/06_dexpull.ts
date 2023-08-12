@@ -10,15 +10,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     console.log(`Deployer: ${deployer}`);
 
-    // goerli
-    const mailbox = "0xCC737a94FecaeC165AbCf12dED095BB13F037685";
-    // base testnet
-    // const mailbox = "0x9d4Bdf4c343D4741E29362908f4FAB32b7a3fD83";
-    // base is where our DexPush is sitting
-    const pushDomain = 84531;
-    const pushAddr = "0xE1EA187d652A4496285A971d40bfc346BDf9b854";
-    // sepolia
-    // const mailbox = "0xCC737a94FecaeC165AbCf12dED095BB13F037685";
+    // Sepolia DexPush parameters
+    const pushDomain = 11155111;
+    const pushAddr = "0xB1A9a37543fB8919B17f0707d00857c6855BBDBf";
+    // mailbox in base.
+    const mailbox = "0x9d4Bdf4c343D4741E29362908f4FAB32b7a3fD83";
+    // mailbox in goerli
+    // const mailbox = "";
 
     await deploy('DexPull', {
         from: deployer,
