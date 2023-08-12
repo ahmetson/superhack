@@ -21,8 +21,10 @@ Deployed chains:
 - [Blank page (joking)](https://testnet.zora.co/) &ndash; yeah, I am joking. It's a testnet page from zora to create
 - [Zora doc](https://docs.zora.co/docs/zora-network/network#zora-network-goerli-testnet) &ndash; opposite of the main site, it's in dark, like my eyes in the dark cave.
 
-> note, zora testnet is not available on **chainlist**.
+> Zora testnet is not available on **chainlist**.
 
+> In the base, the nodes are not setting the gas price.
+> So you should provide by yourself.
 
 # Running SupperWallet
 
