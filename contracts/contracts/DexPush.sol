@@ -66,6 +66,11 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
         superDex[networkId] = TypeCasts.addressToBytes32(networkDex);
     }
 
+    // for testing only
+    function clearPendingTransfer(address user, uint32 source) external {
+        delete superTransfers[user][source];
+    }
+
     /**
      * Start the transaction.
      *
