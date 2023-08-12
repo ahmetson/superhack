@@ -1,4 +1,3 @@
-// This account sets a super user
 import { ethers } from "hardhat";
 import 'dotenv/config'
 import sepolia from "../../../superwallet/lib/deployments/sepolia";
