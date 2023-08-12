@@ -22,7 +22,7 @@ export default function Balances(){
 
         let asyncFunc = async () => {
             console.log(`Async state entered`);
-            const networks = SupportedNetworks();
+            const networks = await SupportedNetworks();
 
             console.log("network parameters loaded");
 

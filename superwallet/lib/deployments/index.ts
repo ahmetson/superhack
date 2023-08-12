@@ -5,7 +5,8 @@ import goerli from './goerli'
 import baseTestnet from "./baseTestnet";
 
 import {ethers} from "ethers";
-import {getSwtPrivateKey} from "../account";
+import {Account, getSwtPrivateKey} from "../account";
+import Safe, {EthersAdapter} from "@safe-global/protocol-kit";
 
 // all supported networks
 let contractNetworks = [sepolia, baseTestnet, goerli];
@@ -14,20 +15,29 @@ export const Networks = {
     baseTestnet: {
         name: "baseTestnet",
         rpc: process.env.NEXT_PUBLIC_BASE_RPC,
+        txServiceUrl: process.env.NEXT_PUBLIC_BASE_TX_SERVICE_RPC,
         provider: undefined,
         account: undefined,
+        safeAdapter: undefined,
+        safeAccount: undefined,
     },
     goerli: {
         name: "goerli",
         rpc: process.env.NEXT_PUBLIC_GOERLI_RPC,
+        txServiceUrl: process.env.NEXT_PUBLIC_GOERLI_TX_SERVICE_RPC,
         provider: undefined,
         account: undefined,
+        safeAdapter: undefined,
+        safeAccount: undefined,
     },
     sepolia: {
+        txServiceUrl: '',
         name: "sepolia",
         rpc: process.env.NEXT_PUBLIC_SEPOLIA_RPC,
         provider: undefined,
         account: undefined,
+        safeAdapter: undefined,
+        safeAccount: undefined,
     }
 }
 export const PushChain = "sepolia";
@@ -97,12 +107,22 @@ export function getSuperWalletInfoAt(chainId: string): ContractInfo {
 }
 
 
-export const SupportedNetworks = () => {
+export const SupportedNetworks = async () => {
     const privateKey = getSwtPrivateKey();
 
     for (let name in Networks) {
         Networks[name].provider = new ethers.providers.JsonRpcProvider(Networks[name].rpc);
         Networks[name].account = new ethers.Wallet(privateKey, Networks[name].provider);
+
+        if (name != PushChain) {
+            let safeAdapter = new EthersAdapter({
+                ethers,
+                signerOrProvider: Networks[name].account,
+            });
+
+            Networks[name].safeAdapter = safeAdapter;
+            Networks[name].safeAccount = await Safe.create({ethAdapter: safeAdapter, safeAddress: Account[name]});
+        }
     }
 
     return Networks;
