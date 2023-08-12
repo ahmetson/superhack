@@ -32,7 +32,7 @@ contract DexPull is HyperlaneConnectionClient  {
     // @param mailbox Hyperlane mailbox
     // @param dexAddr the DexPush address on the SuperWallet Testnet.
     // @param dexDest the SuperWallet Testnet id in the hyperlane.
-    constructor(address mailbox, address dexAddr, uint32 dexDest) {
+    constructor(address mailbox, address dexAddr, uint32 dexDest) initializer {
         __HyperlaneConnectionClient_initialize(mailbox);
         dexPush = TypeCasts.addressToBytes32(dexAddr);
         dexPushDest = dexDest;
