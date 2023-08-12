@@ -1,18 +1,6 @@
-import {SupportedNetworks} from '../lib/network';
-import {ContractInfo, getContractInfo} from "./deployments";
-
 export const Tokens = [
-    {symbol: "TT", "name": "TestToken"},
-    {symbol: "SWT", "name": "SuperWalletToken"}
+    {symbol: "SWT", "name": "SuperWalletTest", id: 1, contracts: {}},
+    {symbol: "TT", "name": "TestToken", id: 2, contracts: {}}
 ]
 
-export const SupportedTokens = () => {
-    let tokens: Array<Array<ContractInfo>> = [];
-
-    for (let token of Tokens) {
-        tokens.push(getContractInfo(token.name))
-    }
-
-    return tokens;
-}
 

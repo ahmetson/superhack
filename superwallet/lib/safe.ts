@@ -9,17 +9,6 @@ import {ContractInfo, getSuperWalletInfoAt} from "./deployments";
 const l1Rpc = process.env.NEXT_PUBLIC_L1_RPC!;
 const privateKey = process.env.NEXT_PUBLIC_PRIVATE_KEY!;
 
-// safe accounts associated with the admin key
-const baseSafeAddr = `0xEFe21201bdC8B3c2a659008F5806CE33eBC4dE45`;
-const swtAddr = "0x80Cbc1f7fd60B7026C0088e5eD58Fc6Ce1180141"; // same as on metamask
-const goerliSafeAddr = "0x07E5439921305486DF2505268349424E3886b647";
-
-const swt = {
-    id: 1,
-    goerli: "0x0564C3e8Fe23c5A6220A300c303f41e43D9be9e2",
-    base: "0xe40c7856B6D0e1B01dECBF9976BB706B9Cd1229f",
-}
-
 // @ts-ignore
 const web3Provider = new ethers.providers.JsonRpcProvider(l1Rpc);
 console.log(`private key: ${privateKey}`);
