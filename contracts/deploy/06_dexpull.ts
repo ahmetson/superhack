@@ -1,22 +1,21 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
+import sepolia from "../../superwallet/lib/deployments/sepolia";
+import {getMailbox} from "../scripts/mailbox";
 
 // https://docs.hyperlane.xyz/docs/resources/addresses
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-    const {deployments, getNamedAccounts} = hre;
+    const {deployments, getNamedAccounts, network} = hre;
     const {deploy} = deployments;
 
     const {deployer} = await getNamedAccounts();
 
-    console.log(`Deployer: ${deployer}`);
-
     // Sepolia DexPush parameters
-    const pushDomain = 11155111;
-    const pushAddr = "0x2A4D798F023a88Ebff928aE6b89B629C38F3A93b";
-    // mailbox in base.
-    // const mailbox = "0x9d4Bdf4c343D4741E29362908f4FAB32b7a3fD83";
-    // mailbox in goerli
-    const mailbox = "0xCC737a94FecaeC165AbCf12dED095BB13F037685";
+    const pushDomain = sepolia.chainId;
+    const pushAddr = sepolia.contracts.DexPush.address as string;
+    const mailbox = getMailbox(network.name);
+
+    console.log(`Deployer: ${deployer}, Mailbox: ${mailbox}, PushDex: ${pushDomain}, ${pushAddr}`);
 
     await deploy('DexPull', {
         from: deployer,
