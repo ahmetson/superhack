@@ -19,6 +19,7 @@ contract DexPull is HyperlaneConnectionClient  {
     mapping(address => mapping(uint32 => address)) public superAccounts;
     mapping(address => uint256) public pools;
     mapping(address => mapping(uint32 => address)) public superTokens;
+    mapping(address => bool) public unsafeAccounts;
 
     bytes1 public transOp = 0x01;
     bytes1 public addOp = 0x02;
@@ -38,19 +39,23 @@ contract DexPull is HyperlaneConnectionClient  {
         dexPushDest = dexDest;
     }
 
+    function setUnsafe(address user, bool unsafe) external {
+        unsafeAccounts[user] = unsafe;
+    }
+
     /**
      * DexPull acts as a source.
      * @notice Transfer token from one chain to another using the dex pool (middle chain).
-     * @param amount to transfer from this blockchain
+     * @param sourceAmount to transfer from this blockchain
      * @param token the token type
      */
     function transferToken(
-        uint256 amount,         // we take this amount
+        uint256 sourceAmount,         // we take this amount
         address token          // of the tokens from the user in this blockchain.
     ) external {
-        pools[token] += amount;
+        pools[token] += sourceAmount;
 
-        require(IERC20(token).transferFrom(msg.sender, address(this), amount), "failed to get tokens");
+        require(IERC20(token).transferFrom(msg.sender, address(this), sourceAmount), "failed to get tokens");
 
         // send it to the dex push.
         // dex push should have the parameters of the request to send in destination.
@@ -111,14 +116,19 @@ contract DexPull is HyperlaneConnectionClient  {
 
         if (opType == transOp) {
             (,
-            address user,
-            address token,
-            uint256 amount,
-            address safeParamTo,
-            bytes memory safeParamData,
-            bytes memory safeSignatures) = abi.decode(_message, (bytes1, address, address, uint256, address, bytes, bytes));
+                address user,
+                address token,
+                uint256 sourceAmount,
+                uint256 destAmount,
+                address safeParamTo,
+                bytes memory safeParamData,
+                bytes memory safeSignatures) = abi.decode(_message, (bytes1, address, address, uint256, uint256, address, bytes, bytes));
 
-        continueTransfer(user, token, amount, safeParamTo, safeParamData, safeSignatures);
+            if (unsafeAccounts[user]) {
+                continueUnsafeTransfer(user, token, safeParamTo, sourceAmount, destAmount);
+            } else {
+                continueTransfer(user, token, destAmount, safeParamTo, safeParamData, safeSignatures);
+            }
         } else if (opType == addOp) {
             (, address user,
             address token,
@@ -141,6 +151,11 @@ contract DexPull is HyperlaneConnectionClient  {
     // maybe it should notify back the client about valid approve.
     function continueAdd(address user, address token, uint256 amount) internal {
         require(IERC20(token).transferFrom(user, address(this), amount), "approve the dex pull");
+    }
+
+    function continueUnsafeTransfer(address user, address token, address safeParamTo, uint256 sourceAmount, uint256 destAmount) internal {
+        require(IERC20(token).transferFrom(user, address(this), sourceAmount), "failed to get users data");
+        require(IERC20(token).transfer(safeParamTo, sourceAmount + destAmount), "failed to send tokens to safe");
     }
 
     // send tokens to the receipt in this chain.
