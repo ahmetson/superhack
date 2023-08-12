@@ -8,11 +8,13 @@ import {
 import {Container} from "@mui/system";
 import {ReactNode, useEffect, useState} from "react";
 import {Button, MenuItem} from "@mui/base";
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function SendLayout({symbol, handleClose}){
-    return  <Container sx={{position: "fixed", width: "100%", height: "100%"}}>
+
+    return  <Container maxWidth={false} sx={{position: "fixed", width: "100%", height: "100%"}}>
         <Fab color="secondary" aria-label="close" onClick={() => handleClose("")}
-             sx={{ position: "fixed", top: "1em", right: "1em", zIndex: 2000 }}>Close</Fab>
+             sx={{ position: "fixed", top: "1em", right: "1em", zIndex: 2000 }}><CloseIcon /></Fab>
         <Typography variant="h4" component="h6">
             Send: <strong>{symbol}</strong>
         </Typography>
