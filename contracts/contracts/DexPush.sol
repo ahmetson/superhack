@@ -93,7 +93,7 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
         bytes calldata safeParamData,     // safe sdk the transaction parameters
         bytes calldata safeSignatures
      ) external {
-        require(superTransfers[msg.sender][source].destination > 0, "previous tx is pending");
+        require(superTransfers[msg.sender][source].destination == 0, "previous tx is pending");
 
         SuperTransfer memory superTransfer = SuperTransfer(destination, sourceAmount, destAmount, tokenId, safeParamTo, safeParamData, safeSignatures);
         if (sourceAmount > 0) {
