@@ -6,12 +6,20 @@ async function main() {
     let signer = signers[0];
 
     let DexPush = await ethers.getContractFactory("DexPush", signer)
-    let dexPushAddress = "0xB1A9a37543fB8919B17f0707d00857c6855BBDBf";
+    let dexPushAddress = "0x2A4D798F023a88Ebff928aE6b89B629C38F3A93b";
 
     let contract = await DexPush.attach(dexPushAddress);
-    const baseSafeAddr = `0xEFe21201bdC8B3c2a659008F5806CE33eBC4dE45`;
+
+    // safe
+    // const baseSafeAddr = `0xEFe21201bdC8B3c2a659008F5806CE33eBC4dE45`;
+    // const goerliSafeAddr = "0x07E5439921305486DF2505268349424E3886b647";
+
+    // unsafe
+    const baseSafeAddr = `0x80Cbc1f7fd60B7026C0088e5eD58Fc6Ce1180141`;
+    const goerliSafeAddr = "0x80Cbc1f7fd60B7026C0088e5eD58Fc6Ce1180141";
+
     const swtAddr = "0x80Cbc1f7fd60B7026C0088e5eD58Fc6Ce1180141"; // same as on metamask
-    const goerliSafeAddr = "0x07E5439921305486DF2505268349424E3886b647";
+
     const baseDomain = 84531;
     const goerliDomain = 5;
 

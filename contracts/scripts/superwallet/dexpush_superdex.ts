@@ -7,11 +7,11 @@ async function main() {
     let signer = signers[0];
 
     let DexPush = await ethers.getContractFactory("DexPush", signer)
-    let dexPushAddress = "0xB1A9a37543fB8919B17f0707d00857c6855BBDBf";
+    let dexPushAddress = "0x2A4D798F023a88Ebff928aE6b89B629C38F3A93b";
 
     const dexPulls = {
-        goerli: "0xCb3B96E8c57E90b8B74959c8475cD3245D02f053",
-        base: "0x14eEF697c9b0cE96ed0C06d20EcB338cd7BEA11a",
+        goerli: "0x854b1CB04296594427db0f7e96bcCBC35a05638B",
+        base: "0x662dDF02cbf5A6CA8aAE237cAE7dC5BBDB06D057",
     }
 
     let contract = await DexPush.attach(dexPushAddress);
