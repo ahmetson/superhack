@@ -46,9 +46,7 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
     bytes1 public addOp = 0x02;
     bytes1 public swapOp = 0x03;
 
-    constructor() {}
-
-    function initialize(address mailbox) external initializer {
+    constructor(address mailbox) initializer {
         __HyperlaneConnectionClient_initialize(mailbox);
     }
 
