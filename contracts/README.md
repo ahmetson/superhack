@@ -61,8 +61,14 @@ npx hardhat run scripts/auth_kit.ts
 As a hello world, we use `Counter.`
 
 ```shell
-npx hardhat deploy --network swt
+npx hardhat deploy --network swt --tags <ContractName>
 ```
+
+After deploying all contracts use the following for each network:
+```shell
+npx hardhat export --export /mnt/d/ahmetson/superhack/superwallet/lib/deployments/<networkName>.ts
+```
+It will export abi and the file name.
 
 Open the `scripts/counter.ts` and 
 change the counter address.
