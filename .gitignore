@@ -11,3 +11,6 @@ react-tutorial/.next
 safe-hello/node_modules
 next-tutorial/my-app/.yarn
 node_modules
+_hyperlane/base_db
+_hyperlane/base_relayer_cache
+_hyperlane/base_signatures
