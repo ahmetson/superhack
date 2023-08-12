@@ -1,16 +1,18 @@
 import Avatar from '@mui/material/Avatar';
 import {Account} from "../lib/account";
-import {IconButton, List, ListItem, ListItemAvatar, ListItemText, Typography} from "@mui/material";
+import {Fade, IconButton, List, ListItem, ListItemAvatar, ListItemText, Typography} from "@mui/material";
 
 import {Tokens} from '../lib/token';
 import {Container} from "@mui/system";
 import {useEffect, useState} from "react";
 import {SupportedNetworks, getContractInfo, getContracts} from "../lib/deployments/index";
 import {ethers} from "ethers";
+import SendLayout from "./send_layout";
 
 export default function Balances(){
     const [balance0, setBalance0] = useState(0.0);
     const [balance1, setBalance1] = useState(0.0);
+    const [sendingToken, setSendingToken] = useState("");
 
     let token0 = "SuperWalletTest";
     let token1 = "TestToken";
@@ -73,6 +75,10 @@ export default function Balances(){
         }).catch(console.error);
     }, []);
 
+    function handleSend(tokenSymbol: string) {
+        setSendingToken(tokenSymbol);
+    }
+
     return  <Container>
             <Typography variant="h4" component="h6">
                 Balances:
@@ -80,7 +86,7 @@ export default function Balances(){
              <List>
                 <ListItem
                   secondaryAction={
-                    <IconButton edge="end" aria-label="send">Send</IconButton>
+                    <IconButton edge="end" aria-label="send" onClick={() => handleSend(Tokens[0].symbol)}>Send</IconButton>
                   }
                 >
                     <ListItemAvatar>
@@ -94,7 +100,7 @@ export default function Balances(){
                 </ListItem>
                  <ListItem
                      secondaryAction={
-                         <IconButton edge="end" aria-label="send">Send</IconButton>
+                         <IconButton edge="end" aria-label="send" onClick={() => handleSend(Tokens[1].symbol)}>Send</IconButton>
                      }
                  >
                      <ListItemAvatar>
@@ -105,5 +111,6 @@ export default function Balances(){
                      />
                  </ListItem>
              </List>
+            <Fade in={sendingToken.length > 0}>{SendLayout({symbol: sendingToken, handleClose: handleSend})}</Fade>
         </Container>
 }
