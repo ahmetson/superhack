@@ -1,9 +1,10 @@
 import Head from 'next/head';
-import Link from 'next/link';
 import styles from '../styles/Home.module.css';
 import {getSortedPosts} from "../lib/posts";
 import {createSafe, createTx, getSafeInfo} from "../lib/safe";
 import {useState} from "react";
+import AppBar from '../components/appbar';
+import Balances from "../components/balances";
 
 export async function getStaticProps() {
   const allPostsData = getSortedPosts();
@@ -50,6 +51,10 @@ export default function Home({allPostsData}) {
         </Head>
 
         <main>
+          <AppBar />
+          <Balances></Balances>
+
+
           {safeAddr.length == 0 ?
               <button onClick={handleSafeCreate} className={styles.card}>
                 Create a new Safe
@@ -68,22 +73,11 @@ export default function Home({allPostsData}) {
             <input type="number" value={value} onChange={(e) => setValue(parseFloat(e.target.value))} placeholder="Amount" />
             <button className={styles.card} onClick={handleSendTx}>Send SWT</button>
           </section>
-
-          <section>
-            <h2>Blog</h2>
-            <ul>
-              {allPostsData.map(({id, date, title}) => (
-                  <li key={id}>
-                    <Link href={`/posts/${id}`}>{title}</Link><br />
-                    <small>{date}</small>
-                  </li>
-              ))}
-            </ul>
-          </section>
         </main>
 
         <style jsx>{`
         main {
+          margin: 0;
           padding: 5rem 0;
           flex: 1;
           display: flex;
