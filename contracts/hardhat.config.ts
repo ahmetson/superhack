@@ -28,7 +28,7 @@ const config: HardhatUserConfig = {
     },
     baseTestnet: {
       chainId: 84531,
-      url: "https://base-goerli.blockpi.network/v1/rpc/public",
+      url: "https://goerli.base.org",
       accounts: [process.env.ADMIN_PRIVATE_KEY],
     },
     zoraTestnet: {
