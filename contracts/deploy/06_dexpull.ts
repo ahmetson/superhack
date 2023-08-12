@@ -12,11 +12,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     // Sepolia DexPush parameters
     const pushDomain = 11155111;
-    const pushAddr = "0xB1A9a37543fB8919B17f0707d00857c6855BBDBf";
+    const pushAddr = "0x2A4D798F023a88Ebff928aE6b89B629C38F3A93b";
     // mailbox in base.
-    const mailbox = "0x9d4Bdf4c343D4741E29362908f4FAB32b7a3fD83";
+    // const mailbox = "0x9d4Bdf4c343D4741E29362908f4FAB32b7a3fD83";
     // mailbox in goerli
-    // const mailbox = "";
+    const mailbox = "0xCC737a94FecaeC165AbCf12dED095BB13F037685";
 
     await deploy('DexPull', {
         from: deployer,
