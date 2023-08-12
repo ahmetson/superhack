@@ -17,9 +17,8 @@ import {contractNetworks} from "../../../superwallet/lib/deployments";
 // Call is source and destination chains.
 // it approves the DexPull to transfer user's tokens
 async function main() {
-    console.log(`Network: ${network.name}, `, Object.keys(contractNetworks[network.name]));
     let dexPullAddr = contractNetworks[network.name].contracts.DexPull.address;
-    let tokenAddr = transferParams.sourceTokenAddr;
+    let tokenAddr = contractNetworks[network.name].contracts.SuperWalletTest.address;
 
     // 100k SWT
     let totalAmountWei = "0x152D02C7E14AF6800000";
