@@ -57,12 +57,15 @@ Check your balance on both networks
 npx hardhat run scripts/auth_kit.ts
 ```
 
-### Hello World
-As a hello world, we use `Counter.`
+# Script
 
 ```shell
-npx hardhat deploy --network swt --tags <ContractName>
+npx hardhat deploy --network <network> --tags <ContractName>
+npx hardhat --network <network> export --export ../../superwallet/lib/deployments/<network>.ts
+npx hardhat --network <network> etherscan-verify --api-key $ETHERSCAN_KEY
 ```
+
+> Verifying on Base is not working yet.
 
 After deploying all contracts use the following for each network:
 ```shell
