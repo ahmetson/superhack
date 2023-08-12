@@ -30,6 +30,21 @@ Run the validator
 --checkpointSyncer.path $VALIDATOR_DB_DIRECTORY 
 ```
 
+Or
+
+```shell
+./target/release/validator \
+--reorgPeriod 2 \
+--originChainName base \
+--chains.base.connection.url $BASE_RPC \
+--db $VALIDATOR_SIGNATURES_DIRECTORY \
+--validator.key $VALIDATOR_PRIVATE_KEY_0 \
+--chains.base.signer.key $ADMIN_PRIVATE_KEY \
+--checkpointSyncer.type localStorage \
+--checkpointSyncer.path $BASE_VALIDATOR_DB_DIRECTORY 
+```
+
+
 Note, that the validator key should have some fund inside.
 Even though documentation says that validators are not necessary to be fund
 ed.
@@ -53,6 +68,20 @@ Run the relayer from the most recent block number:
 --allowLocalCheckpointSyncers true \
 --defaultSigner.key $RELAYER_PRIVATE_KEY \
 --chains.sepolia.index.from 4050271
+```
+
+Or
+
+
+```shel
+./target/release/relayer \
+--relayChains base,goerli,sepolia \
+--chains.sepolia.connection.url $SEPOLIA_RPC \
+--chains.goerli.connection.url $GOERLI_RPC \
+--chains.base.connection.url $BASE_RPC \
+--db $BASE_RELAYER_DB_DIRECTORY \
+--allowLocalCheckpointSyncers true \
+--defaultSigner.key $RELAYER_PRIVATE_KEY
 ```
 
 ---
