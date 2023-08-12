@@ -23,11 +23,15 @@ contract DexPull is HyperlaneConnectionClient  {
     bytes1 public transOp = 0x01;
     bytes1 public addOp = 0x02;
     bytes1 public swapOp = 0x03;
+
     uint32 public dexPushDest;
     bytes32 public dexPush;
 
     // Mailbox is responsible for transmitting the messages
     // Mailbox transmits the messages to the dexPush
+    // @param mailbox Hyperlane mailbox
+    // @param dexAddr the DexPush address on the SuperWallet Testnet.
+    // @param dexDest the SuperWallet Testnet id in the hyperlane.
     constructor(address mailbox, address dexAddr, uint32 dexDest) {
         __HyperlaneConnectionClient_initialize(mailbox);
         dexPush = TypeCasts.addressToBytes32(dexAddr);
@@ -35,7 +39,7 @@ contract DexPull is HyperlaneConnectionClient  {
     }
 
     /**
-     * DexPull acts as source.
+     * DexPull acts as a source.
      * @notice Transfer token from one chain to another using the dex pool (middle chain).
      * @param amount to transfer from this blockchain
      * @param token the token type
