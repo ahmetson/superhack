@@ -17,8 +17,8 @@ const config: HardhatUserConfig = {
     },
     // uses goerli or sepolia, check the .env
     sepolia: {
-      chainId: 111551111,
-      url: "https://rpc2.sepolia.org",
+      chainId: 11155111,
+      url: process.env.SEPOLIA_RPC,
       accounts: [process.env.ADMIN_PRIVATE_KEY!],
     },
     goerli: {
