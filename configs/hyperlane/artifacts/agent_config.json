@@ -1,0 +1,30 @@
+{
+  "chains": {
+    "base": {
+      "name": "base",
+      "domain": 84531,
+      "addresses": {
+        "mailbox": "0x9d4Bdf4c343D4741E29362908f4FAB32b7a3fD83",
+        "interchainGasPaymaster": "0x889400fB9BDE04BFdf353cC718fED3d6dDcF735F",
+        "validatorAnnounce": "0x2fA86cC980702aAcBd2C007bF22441650e5b997C"
+      },
+      "protocol": "ethereum",
+      "finalityBlocks": 1,
+      "index": {
+        "from": 8319079
+      }
+    },
+    "zora": {
+      "name": "zora",
+      "domain": 999,
+      "addresses": {
+        "mailbox": "0x4D5e1EFa6f38e17f5048eb57e578c523bc59AAaC",
+        "interchainGasPaymaster": "0x1C1f3CA6856557871367Ab9F01F94E70F76101d5",
+        "validatorAnnounce": "0x717a3b2cEeCC4C6D213594FCc8f5746Ae4938355"
+      },
+      "protocol": "ethereum",
+      "finalityBlocks": 1,
+      "index": {}
+    }
+  }
+}
