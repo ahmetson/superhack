@@ -12,7 +12,8 @@ A token manager that seats in the SuperWallet chain. For securing the transactio
 contract DexPush is HyperlaneConnectionClient, Dex  {
     struct SuperTransfer {
         uint32 destination;
-        uint256 amount;
+        uint256 sourceAmount;
+        uint256 destAmount;
         uint32 tokenId;          // of the tokens from the user in this blockchain.
         address safeParamTo;             // safe sdk part to which smartcontract it needs to be send
         bytes safeParamData;     // safe sdk the transaction parameters
@@ -80,22 +81,22 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
      *
      * @notice Transfer token from one chain to another using the dex pool.
      * @param destination the target chain id where the transaction should be executed
-     * @param amount to transfer from this blockchain
      * @param tokenId the token type
      */
     function transferToken(
         uint32 source,              // we should receive message from this blockchain about token deduction
         uint32 tokenId,          // of the tokens from the user in this blockchain.
         uint32 destination,         // we should send message to here about token transfer
-        uint256 amount,
+        uint256 sourceAmount,
+        uint256 destAmount,
         address safeParamTo,             // safe sdk part to which smartcontract it needs to be send
         bytes calldata safeParamData,     // safe sdk the transaction parameters
         bytes calldata safeSignatures
      ) external {
         require(superTransfers[msg.sender][source].destination > 0, "previous tx is pending");
 
-        SuperTransfer memory superTransfer = SuperTransfer(destination, amount, tokenId, safeParamTo, safeParamData, safeSignatures);
-        if (amount > 0) {
+        SuperTransfer memory superTransfer = SuperTransfer(destination, sourceAmount, destAmount, tokenId, safeParamTo, safeParamData, safeSignatures);
+        if (sourceAmount > 0) {
             // user => source => transfer
             superTransfers[msg.sender][source] = superTransfer;
         } else {
@@ -116,7 +117,8 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
             transferOp,
             safeWallet,
             tokenOnRemote,
-            superTransfer.amount,
+            superTransfer.sourceAmount,
+            superTransfer.destAmount,
             superTransfer.safeParamTo,
             superTransfer.safeParamData,
             superTransfer.safeSignatures);
