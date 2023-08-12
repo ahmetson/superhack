@@ -30,8 +30,8 @@ async function main() {
     let contract = await SWT.attach(tokenAddr);
 
     console.log(`Approve dex pull to use our tokens`);
-    let tx = await contract.approve(dexPullAddr, totalAmountWei);
-    console.log(`waiting for confirmation`);
+    let tx = await contract.approve(dexPullAddr, totalAmountWei, {gasPrice: "2000000000"});
+    console.log(`waiting for confirmation ${tx.hash}...`);
     await tx.wait();
     console.log(`confirmed`);
 
