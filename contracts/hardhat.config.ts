@@ -10,20 +10,25 @@ const config: HardhatUserConfig = {
     deployer: 0,
   },
   networks: {
-    // super wallet's super bridge
-    l2: {
+    // super wallet's testnet
+    swt: {
       url: process.env.L2_RPC!,
       accounts: [process.env.ADMIN_PRIVATE_KEY!],
     },
-    // uses sepolia
-    l1: {
+    // uses goerli or sepolia, check the .env
+    sepolia: {
       chainId: 111551111,
-      url: process.env.L1_RPC!,
+      url: "https://rpc2.sepolia.org",
       accounts: [process.env.ADMIN_PRIVATE_KEY!],
+    },
+    goerli: {
+      chainId: 5,
+      url: "https://eth-goerli.public.blastapi.io",
+      accounts: [process.env.ADMIN_PRIVATE_KEY!]
     },
     baseTestnet: {
       chainId: 84531,
-      url: "https://1rpc.io/base-goerli",
+      url: "https://base-goerli.blockpi.network/v1/rpc/public",
       accounts: [process.env.ADMIN_PRIVATE_KEY],
     },
     zoraTestnet: {
