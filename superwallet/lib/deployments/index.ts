@@ -9,43 +9,57 @@ import {Account, getSwtPrivateKey} from "../account";
 import Safe, {EthersAdapter} from "@safe-global/protocol-kit";
 
 // all supported networks
-let contractNetworks = [sepolia, baseTestnet, goerli];
+// and their smartcontract artifacts
+export let contractNetworks = {sepolia, baseTestnet, goerli};
 
-export const Networks = {
-    baseTestnet: {
+let pullName = "DexPull";
+let pushName = "DexPush";
+
+export type Network = {
+    name: string;
+    chainId: number;
+    domain: number;
+    rpc: string;
+    provider?: ethers.providers.JsonRpcProvider;
+    account?: ethers.Wallet;
+    txServiceUrl?: string;  // only for pulls
+    safeAdapter?: EthersAdapter;    // only for pulls
+    safeAccount?: Safe; // only for pulls
+    dex?: ethers.Contract;
+}
+
+export const Networks: {[key: string]: Network} = {
+    "baseTestnet": {
+        chainId: 0,
+        domain: 0,
         name: "baseTestnet",
         rpc: process.env.NEXT_PUBLIC_BASE_RPC,
         txServiceUrl: process.env.NEXT_PUBLIC_BASE_TX_SERVICE_RPC,
-        provider: undefined,
-        account: undefined,
-        safeAdapter: undefined,
-        safeAccount: undefined,
     },
-    goerli: {
+    "goerli": {
+        chainId: 0,
+        domain: 0,
         name: "goerli",
         rpc: process.env.NEXT_PUBLIC_GOERLI_RPC,
         txServiceUrl: process.env.NEXT_PUBLIC_GOERLI_TX_SERVICE_RPC,
-        provider: undefined,
-        account: undefined,
-        safeAdapter: undefined,
-        safeAccount: undefined,
     },
-    sepolia: {
-        txServiceUrl: '',
+    "sepolia": {
+        chainId: 0,
+        domain: 0,
         name: "sepolia",
         rpc: process.env.NEXT_PUBLIC_SEPOLIA_RPC,
-        provider: undefined,
-        account: undefined,
-        safeAdapter: undefined,
-        safeAccount: undefined,
+        txServiceUrl: '',
     }
 }
 export const PushChain = "sepolia";
 
-// checking during the deployment
+// config sync during the building
 for (let contractNetwork of contractNetworks) {
     if (!Networks.hasOwnProperty(contractNetwork.name)) {
         throw `contractNetwork ${contractNetwork.name} not in the Networks list`;
+    } else {
+        Networks[contractNetwork.name].chainId = parseInt(contractNetwork.chainId);
+        Networks[contractNetwork.name].domain = parseInt(contractNetwork.chainId);
     }
 }
 
@@ -53,10 +67,11 @@ export type ContractInfo = {
     networkName: string;
     chainId: string;
     address: string;
-    abi: any;
+    abi: ethers.utils.Interface;
 }
 
-export function getContractInfo(contractName): {[key: string]: ContractInfo} {
+// Returns all instances
+export function getContractInfo(contractName: string): {[key: string]: ContractInfo} {
     let contracts: {[key: string]: ContractInfo} = {};
 
     for (const network of contractNetworks) {
@@ -67,13 +82,14 @@ export function getContractInfo(contractName): {[key: string]: ContractInfo} {
             networkName: network.name,
             chainId: network.chainId,
             address: network.contracts[contractName].address,
-            abi: network.contracts[contractName].abi,
+            abi: new ethers.utils.Interface(network.contracts[contractName].abi),
         };
     }
 
     return contracts;
 }
 
+// Loads the instance of the contract
 export function getContracts(contractInfo: {[key: string]: ContractInfo}, networks: object) {
     let contracts = {}
 
@@ -87,8 +103,23 @@ export function getContracts(contractInfo: {[key: string]: ContractInfo}, networ
     return contracts;
 }
 
-export function getSuperWalletInfo(): Array<ContractInfo> {
-    return Object.values(getContractInfo("SuperWalletTest"));
+function getContract(inf: ContractInfo, network: Network) {
+    return new ethers.Contract(inf.address, inf.abi, network.account);
+}
+
+export function getContractInfoAt(name: string, networkName: string): ContractInfo {
+    for (const network of contractNetworks) {
+        if (network.name === networkName) {
+            return {
+                networkName: network.name,
+                chainId: network.chainId,
+                address: network.contracts[name].address,
+                abi: new ethers.utils.Interface(network.contracts[name].abi),
+            }
+        }
+    }
+
+    return undefined;
 }
 
 export function getSuperWalletInfoAt(chainId: string): ContractInfo {
@@ -98,14 +129,13 @@ export function getSuperWalletInfoAt(chainId: string): ContractInfo {
                 networkName: network.name,
                 chainId: network.chainId,
                 address: network.contracts["SuperWalletTest"].address,
-                abi: network.contracts["SuperWalletTest"].abi,
+                abi: new ethers.utils.Interface(network.contracts["SuperWalletTest"].abi),
             }
         }
     }
 
     return undefined;
 }
-
 
 export const SupportedNetworks = async () => {
     const privateKey = getSwtPrivateKey();
@@ -122,6 +152,12 @@ export const SupportedNetworks = async () => {
 
             Networks[name].safeAdapter = safeAdapter;
             Networks[name].safeAccount = await Safe.create({ethAdapter: safeAdapter, safeAddress: Account[name]});
+
+            let inf = getContractInfoAt(pullName, name);
+            Networks[name].dex = getContract(inf, Networks[name]) as ethers.Contract;
+        } else {
+            let inf = getContractInfoAt(pushName, name);
+            Networks[name].dex = getContract(inf, Networks[name]) as ethers.Contract;
         }
     }
 
