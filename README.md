@@ -52,6 +52,9 @@ Bridges:
 * https://goerli-bridge.base.org/
 * https://bridge.mode.network/
 
+Explorers:
+* https://base-goerli.blockscout.com/
+
 ---
 # Deployment
 In order to run the code, you would need:
