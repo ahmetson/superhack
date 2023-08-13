@@ -1,0 +1,56 @@
+{
+  "numDeployConfirmations": 1,
+
+  "finalSystemOwner": "0x80Cbc1f7fd60B7026C0088e5eD58Fc6Ce1180141",
+  "portalGuardian": "0x80Cbc1f7fd60B7026C0088e5eD58Fc6Ce1180141",
+
+  "l1StartingBlockTag": "0xce49bf2a370d0653c74e74b038e4e5976cc0f4417a2c93a493ec7f9ff8c7791c",
+
+  "l1ChainID": 11155111,
+  "l2ChainID": 535754,
+  "l2BlockTime": 2,
+
+  "maxSequencerDrift": 600,
+  "sequencerWindowSize": 3600,
+  "channelTimeout": 300,
+
+  "p2pSequencerAddress": "0x6f01c17B121d743E9eC30003Afd79B7eB824ab9A",
+  "batchInboxAddress": "0xff00000000000000000000000000000000535754",
+  "batchSenderAddress": "0x4540f8eE76384B87EeD79fbCe5307A02E940aFF8",
+
+  "l2OutputOracleSubmissionInterval": 5,
+  "l2OutputOracleStartingBlockNumber": 4048892,
+  "l2OutputOracleStartingTimestamp": 1691501664,
+
+  "l2OutputOracleProposer": "0xC92f1088EB338d6DaadD5306Da9645b678BB1E3a",
+  "l2OutputOracleChallenger": "0x80Cbc1f7fd60B7026C0088e5eD58Fc6Ce1180141",
+
+  "finalizationPeriodSeconds": 2,
+
+  "proxyAdminOwner": "0x80Cbc1f7fd60B7026C0088e5eD58Fc6Ce1180141",
+  "baseFeeVaultRecipient": "0x80Cbc1f7fd60B7026C0088e5eD58Fc6Ce1180141",
+  "l1FeeVaultRecipient": "0x80Cbc1f7fd60B7026C0088e5eD58Fc6Ce1180141",
+  "sequencerFeeVaultRecipient": "0x80Cbc1f7fd60B7026C0088e5eD58Fc6Ce1180141",
+
+  "baseFeeVaultMinimumWithdrawalAmount": "0x8ac7230489e80000",
+  "l1FeeVaultMinimumWithdrawalAmount": "0x8ac7230489e80000",
+  "sequencerFeeVaultMinimumWithdrawalAmount": "0x8ac7230489e80000",
+  "baseFeeVaultWithdrawalNetwork": 0,
+  "l1FeeVaultWithdrawalNetwork": 0,
+  "sequencerFeeVaultWithdrawalNetwork": 0,
+
+  "gasPriceOracleOverhead": 2100,
+  "gasPriceOracleScalar": 1000000,
+
+  "enableGovernance": true,
+  "governanceTokenSymbol": "SWT",
+  "governanceTokenName": "SuperWalletToken",
+  "governanceTokenOwner": "0x80Cbc1f7fd60B7026C0088e5eD58Fc6Ce1180141",
+
+  "l2GenesisBlockGasLimit": "0x1c9c380",
+  "l2GenesisBlockBaseFeePerGas": "0x3b9aca00",
+  "l2GenesisRegolithTimeOffset": "0x0",
+
+  "eip1559Denominator": 50,
+  "eip1559Elasticity": 10
+}

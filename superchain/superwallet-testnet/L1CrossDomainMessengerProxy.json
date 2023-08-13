@@ -1,0 +1,119 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract AddressManager",
+          "name": "_addressManager",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "_implementationName",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    }
+  ],
+  "address": "0x407D880217e8A18e854C093C80B99f45a6fF5c38",
+  "args": [
+    "0xF53dc83E9cE56612dd47cA24e7439C204B602A22",
+    "OVM_L1CrossDomainMessenger"
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b506040516105f03803806105f083398101604081905261002f91610088565b30600090815260016020908152604080832080546001600160a01b0319166001600160a01b03871617905590829052902061006a8282610203565b5050506102c2565b634e487b7160e01b600052604160045260246000fd5b6000806040838503121561009b57600080fd5b82516001600160a01b03811681146100b257600080fd5b602084810151919350906001600160401b03808211156100d157600080fd5b818601915086601f8301126100e557600080fd5b8151818111156100f7576100f7610072565b604051601f8201601f19908116603f0116810190838211818310171561011f5761011f610072565b81604052828152898684870101111561013757600080fd5b600093505b82841015610159578484018601518185018701529285019261013c565b8284111561016a5760008684830101525b8096505050505050509250929050565b600181811c9082168061018e57607f821691505b6020821081036101ae57634e487b7160e01b600052602260045260246000fd5b50919050565b601f8211156101fe57600081815260208120601f850160051c810160208610156101db5750805b601f850160051c820191505b818110156101fa578281556001016101e7565b5050505b505050565b81516001600160401b0381111561021c5761021c610072565b6102308161022a845461017a565b846101b4565b602080601f831160018114610265576000841561024d5750858301515b600019600386901b1c1916600185901b1785556101fa565b600085815260208120601f198616915b8281101561029457888601518255948401946001909101908401610275565b50858210156102b25787850151600019600388901b60f8161c191681555b5050505050600190811b01905550565b61031f806102d16000396000f3fe608060408181523060009081526001602090815282822054908290529181207fbf40fac1000000000000000000000000000000000000000000000000000000009093529173ffffffffffffffffffffffffffffffffffffffff9091169063bf40fac19061006d9060846101e2565b602060405180830381865afa15801561008a573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906100ae91906102c5565b905073ffffffffffffffffffffffffffffffffffffffff8116610157576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152603960248201527f5265736f6c76656444656c656761746550726f78793a2074617267657420616460448201527f6472657373206d75737420626520696e697469616c697a656400000000000000606482015260840160405180910390fd5b6000808273ffffffffffffffffffffffffffffffffffffffff16600036604051610182929190610302565b600060405180830381855af49150503d80600081146101bd576040519150601f19603f3d011682016040523d82523d6000602084013e6101c2565b606091505b5090925090508115156001036101da57805160208201f35b805160208201fd5b600060208083526000845481600182811c91508083168061020457607f831692505b858310810361023a577f4e487b710000000000000000000000000000000000000000000000000000000085526022600452602485fd5b878601838152602001818015610257576001811461028b576102b6565b7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff008616825284151560051b820196506102b6565b60008b81526020902060005b868110156102b057815484820152908501908901610297565b83019750505b50949998505050505050505050565b6000602082840312156102d757600080fd5b815173ffffffffffffffffffffffffffffffffffffffff811681146102fb57600080fd5b9392505050565b818382376000910190815291905056fea164736f6c634300080f000a",
+  "deployedBytecode": "0x608060408181523060009081526001602090815282822054908290529181207fbf40fac1000000000000000000000000000000000000000000000000000000009093529173ffffffffffffffffffffffffffffffffffffffff9091169063bf40fac19061006d9060846101e2565b602060405180830381865afa15801561008a573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906100ae91906102c5565b905073ffffffffffffffffffffffffffffffffffffffff8116610157576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152603960248201527f5265736f6c76656444656c656761746550726f78793a2074617267657420616460448201527f6472657373206d75737420626520696e697469616c697a656400000000000000606482015260840160405180910390fd5b6000808273ffffffffffffffffffffffffffffffffffffffff16600036604051610182929190610302565b600060405180830381855af49150503d80600081146101bd576040519150601f19603f3d011682016040523d82523d6000602084013e6101c2565b606091505b5090925090508115156001036101da57805160208201f35b805160208201fd5b600060208083526000845481600182811c91508083168061020457607f831692505b858310810361023a577f4e487b710000000000000000000000000000000000000000000000000000000085526022600452602485fd5b878601838152602001818015610257576001811461028b576102b6565b7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff008616825284151560051b820196506102b6565b60008b81526020902060005b868110156102b057815484820152908501908901610297565b83019750505b50949998505050505050505050565b6000602082840312156102d757600080fd5b815173ffffffffffffffffffffffffffffffffffffffff811681146102fb57600080fd5b9392505050565b818382376000910190815291905056fea164736f6c634300080f000a",
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "constructor": {
+        "params": {
+          "_addressManager": "Address of the AddressManager.",
+          "_implementationName": "implementationName of the contract to proxy to."
+        }
+      }
+    }
+  },
+  "metadata": "{\"compiler\":{\"version\":\"0.8.15+commit.e14f2714\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract AddressManager\",\"name\":\"_addressManager\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"_implementationName\",\"type\":\"string\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"stateMutability\":\"payable\",\"type\":\"fallback\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"constructor\":{\"params\":{\"_addressManager\":\"Address of the AddressManager.\",\"_implementationName\":\"implementationName of the contract to proxy to.\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"remappings\":[\"@cwia/=lib/clones-with-immutable-args/src/\",\"@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/\",\"@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/\",\"@rari-capital/solmate/=lib/solmate/\",\"clones-with-immutable-args/=lib/clones-with-immutable-args/src/\",\"ds-test/=lib/ds-test/src/\",\"forge-std/=lib/forge-std/src/\",\"openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/\",\"openzeppelin-contracts/=lib/openzeppelin-contracts/\"],\"optimizer\":{\"enabled\":true,\"runs\":999999},\"metadata\":{\"bytecodeHash\":\"none\"},\"compilationTarget\":{\"src/legacy/ResolvedDelegateProxy.sol\":\"ResolvedDelegateProxy\"},\"libraries\":{}},\"sources\":{\"lib/openzeppelin-contracts/contracts/access/Ownable.sol\":{\"keccak256\":\"0xee2b6bc803215b66037612da0fe9f23ec3c99ff89db4ff05449a8df17c9befc5\",\"urls\":[\"bzz-raw://127be279bb6b2f6106127ea6b431cfc879f9018dd76b7575841821be9eef3488\",\"dweb:/ipfs/QmfXqvL6sKx256hrVuQcSnNtirZrpm4JUbDFXwGHKgrrXU\"],\"license\":\"MIT\"},\"lib/openzeppelin-contracts/contracts/utils/Context.sol\":{\"keccak256\":\"0x81d5fc973a522c8909d60be6a201869d46aa47b030b8813f60616404628c2b94\",\"urls\":[\"bzz-raw://9755b505799e622d964a843a8ed1fd60fedffca230178e5cb95ae9280df4dcd2\",\"dweb:/ipfs/QmRkhUYUUgRZ2QYJjmtQct2ubyYwS3bdUMhbuFYM12VfYn\"],\"license\":\"MIT\"},\"src/legacy/AddressManager.sol\":{\"keccak256\":\"0xbf09d6e4f650fe93a9887c5240f3ce5bf9607d0874e6c308a613220a98ec21ae\",\"urls\":[\"bzz-raw://078b115e1837773553a3ec191fb427ef61dc46402d6d7bec3ca9800d0c296245\",\"dweb:/ipfs/Qmed7vxxXtzzWAHLs9eALDMeJYAB8ZhuqyKy79fLjvgLL9\"],\"license\":\"MIT\"},\"src/legacy/ResolvedDelegateProxy.sol\":{\"keccak256\":\"0x446be10b1940e2f6de83ab4a7b3168a229352df2e6adce468da7a345d834bf2c\",\"urls\":[\"bzz-raw://c0f50327e6a49c04e63c98965c96015d355da9f436d71082367a28733eabb44e\",\"dweb:/ipfs/QmYxs8pm7jc9xXB6rpWNzZBWAbSwMMyXfHF23HGTPaBG85\"],\"license\":\"MIT\"}},\"version\":1}",
+  "numDeployments": 1,
+  "receipt": {
+    "transactionHash": "0x3ff681ffca43596745570fdda373c88e96f78613a57aeeca235f19321831b09e",
+    "transactionIndex": "0x7",
+    "blockHash": "0xe85b9d7c5b6307910bff23914fe916eb4126fd22425cd0c415d46882b1a79ee8",
+    "blockNumber": "0x3dc88c",
+    "from": "0x80Cbc1f7fd60B7026C0088e5eD58Fc6Ce1180141",
+    "to": null,
+    "cumulativeGasUsed": "0x431baf",
+    "gasUsed": "0x44e5e",
+    "contractAddress": "0x407D880217e8A18e854C093C80B99f45a6fF5c38",
+    "logs": [],
+    "status": "0x1",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "type": "0x2",
+    "effectiveGasPrice": "0xbefa35fe"
+  },
+  "solcInputHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 61904,
+        "contract": "src/legacy/ResolvedDelegateProxy.sol:ResolvedDelegateProxy",
+        "label": "implementationName",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_mapping(t_address,t_string_storage)"
+      },
+      {
+        "astId": 61910,
+        "contract": "src/legacy/ResolvedDelegateProxy.sol:ResolvedDelegateProxy",
+        "label": "addressManager",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_address,t_contract(AddressManager)61042)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_contract(AddressManager)61042": {
+        "encoding": "inplace",
+        "label": "contract AddressManager",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_contract(AddressManager)61042)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => contract AddressManager)",
+        "numberOfBytes": "32",
+        "value": "t_contract(AddressManager)61042"
+      },
+      "t_mapping(t_address,t_string_storage)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => string)",
+        "numberOfBytes": "32",
+        "value": "t_string_storage"
+      },
+      "t_string_storage": {
+        "encoding": "bytes",
+        "label": "string",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  "transactionHash": "0x3ff681ffca43596745570fdda373c88e96f78613a57aeeca235f19321831b09e",
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "notice": "ResolvedDelegateProxy is a legacy proxy contract that makes use of the AddressManager to         resolve the implementation address. We're maintaining this contract for backwards         compatibility so we can manage all legacy proxies where necessary."
+  }
+}
