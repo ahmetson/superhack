@@ -21,8 +21,7 @@ async function main() {
     // 2
     let destAmountWei = "0x1BC16D674EC80000";
     // 1
-    // let sourceAmountWei = "0xDE0B6B3A7640000";
-    let sourceAmountWei = "0x00";
+    let sourceAmountWei = "0xDE0B6B3A7640000";
 
     let signers = await ethers.getSigners();
     let signer = signers[0];
