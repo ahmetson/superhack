@@ -43,6 +43,10 @@ contract DexPull is HyperlaneConnectionClient  {
         unsafeAccounts[user] = unsafe;
     }
 
+    function setDexPush(address dexAddr) external {
+        dexPush = TypeCasts.addressToBytes32(dexAddr);
+    }
+
     /**
      * DexPull acts as a source.
      * @notice Transfer token from one chain to another using the dex pool (middle chain).
@@ -59,7 +63,7 @@ contract DexPull is HyperlaneConnectionClient  {
 
         // send it to the dex push.
         // dex push should have the parameters of the request to send in destination.
-        bytes memory wrappedData = abi.encodePacked(transOp, msg.sender);
+        bytes memory wrappedData = abi.encode(transOp, msg.sender);
 
         // Notify the SuperWallet that tokens were deducted
         mailbox.dispatch(dexPushDest, dexPush, wrappedData);
@@ -73,7 +77,7 @@ contract DexPull is HyperlaneConnectionClient  {
     function addLiquidity(address _token0, uint32 _destination, uint32 _token1, uint _amount0, uint _amount1) external {
         IERC20(_token0).transferFrom(msg.sender, address(this), _amount0);
 
-        bytes memory wrappedData = abi.encodePacked(
+        bytes memory wrappedData = abi.encode(
             addOp,
             msg.sender,
             _token1,
@@ -96,7 +100,7 @@ contract DexPull is HyperlaneConnectionClient  {
     function swap(address _token0, uint32 _token1, uint32 _destination, uint _amountIn, bool isToken0) external {
         IERC20(_token0).transferFrom(msg.sender, address(this), _amountIn);
 
-        bytes memory wrappedData = abi.encodePacked(
+        bytes memory wrappedData = abi.encode(
             swapOp,
             msg.sender,
             _token1,
@@ -111,8 +115,8 @@ contract DexPull is HyperlaneConnectionClient  {
     // ============ On receive functions ============
 
     // The DexPull acts as the destination
-    function handle(uint32 _origin, bytes32 _sender, bytes calldata _message) external onlyMailbox {
-        bytes1 opType = _message[0];
+    function handle(uint32 _origin, bytes32 _sender, bytes calldata _message) external {
+        bytes1 opType = bytes1(_message[0]);
 
         if (opType == transOp) {
             (,
@@ -154,7 +158,7 @@ contract DexPull is HyperlaneConnectionClient  {
     }
 
     function continueUnsafeTransfer(address user, address token, address safeParamTo, uint256 sourceAmount, uint256 destAmount) internal {
-        require(IERC20(token).transferFrom(user, address(this), sourceAmount), "failed to get users data");
+        require(IERC20(token).transferFrom(user, address(this), destAmount), "failed to get users data");
         require(IERC20(token).transfer(safeParamTo, sourceAmount + destAmount), "failed to send tokens to safe");
     }
 

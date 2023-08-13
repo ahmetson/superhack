@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 import {HyperlaneConnectionClient} from "@hyperlane-xyz/core/contracts/HyperlaneConnectionClient.sol";
+import {IInterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/interfaces/IInterchainGasPaymaster.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {TypeCasts} from "@hyperlane-xyz/core/contracts/libs/TypeCasts.sol";
 import "./Dex.sol";
@@ -46,9 +47,17 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
     bytes1 public transferOp = 0x01;
     bytes1 public addOp = 0x02;
     bytes1 public swapOp = 0x03;
+    uint public defaultPay = 100305;
 
-    constructor(address mailbox) initializer {
+    IInterchainGasPaymaster public gasPaymaster;
+
+    constructor(address mailbox, address paymaster) initializer {
         __HyperlaneConnectionClient_initialize(mailbox);
+        gasPaymaster = IInterchainGasPaymaster(paymaster);
+    }
+
+    function setGasPrice(uint newPay) external {
+        defaultPay = newPay;
     }
 
     // must be restricted.
@@ -56,6 +65,8 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
         superAccounts[account][networkId] = networkAccount;
         sourceToSwt[networkId][networkAccount] = account;
     }
+
+    receive() external payable {}
 
     // must be restricted.
     function setSuperToken(uint32 tokenId, uint32 networkId, address networkToken) external {
@@ -113,7 +124,7 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
 
         // when DexPush.sol on the destination handles it, it will send to proxyAddr(safe wallet) `amount` of `token`.
         // then it will `executeTransaction`
-        bytes memory wrappedData = abi.encodePacked(
+        bytes memory wrappedData = abi.encode(
             transferOp,
             safeWallet,
             tokenOnRemote,
@@ -123,7 +134,10 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
             superTransfer.safeParamData,
             superTransfer.safeSignatures);
 
-        mailbox.dispatch(superTransfer.destination, superDex[superTransfer.destination], wrappedData);
+        uint payAmount = gasPaymaster.quoteGasPayment(superTransfer.destination, defaultPay);
+
+        bytes32 id = mailbox.dispatch(superTransfer.destination, superDex[superTransfer.destination], wrappedData);
+        gasPaymaster.payForGas{value: payAmount * 2}(id, superTransfer.destination, defaultPay, address(this));
     }
 
     // it doesn't track the deflationary tokens YET
@@ -145,13 +159,16 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
         address tokenOnRemote = superTokens[tokenId][destination];
 
         // transfer to the destination to withdraw some token
-        bytes memory wrappedData = abi.encodePacked(
+        bytes memory wrappedData = abi.encode(
             addOp,
             safeWallet,
             tokenOnRemote,
             d1);
 
-        mailbox.dispatch(destination, superDex[destination], wrappedData);
+        uint payAmount = gasPaymaster.quoteGasPayment(destination, defaultPay);
+
+        bytes32 id = mailbox.dispatch(destination, superDex[destination], wrappedData);
+        gasPaymaster.payForGas{value: payAmount * 2}(id, destination, defaultPay, address(this));
     }
 
     function _swap(uint32 _origin, bytes memory _message) private {
@@ -169,16 +186,18 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
 
         uint amountOut = (amountIn * 997) / 1000;
 
+        {
         isToken0 ?
             _update(resIn + amountIn, resOut - amountOut) :
             _update(resOut - amountOut, resIn + amountIn);
+        }
 
         address swtAcc = sourceToSwt[_origin][sourceSender];
         address safeWallet = superAccounts[swtAcc][destination];
         address tokenOnRemote = superTokens[destTokenId][destination];
 
         // transfer to the destination to withdraw some token
-        bytes memory wrappedData = abi.encodePacked(
+        bytes memory wrappedData = abi.encode(
             swapOp,
             safeWallet,
             tokenOnRemote,
@@ -196,10 +215,10 @@ contract DexPush is HyperlaneConnectionClient, Dex  {
    */
     function handle(
         uint32 _origin,
-        bytes32 , // the smartcontract that sent the message
+        bytes32 _sender, // the smartcontract that sent the message
         bytes memory _message
-    ) external onlyMailbox {
-        bytes1 opType = _message[0];
+    ) external {
+        bytes1 opType = bytes1(_message[0]);
 
         // transferOp, sourceSender, token, amount
         if (opType == transferOp) {
