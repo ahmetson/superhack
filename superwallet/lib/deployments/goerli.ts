@@ -3,13 +3,18 @@ export default {
   "chainId": "5",
   "contracts": {
     "DexPull": {
-      "address": "0x6603714e4d8cFb195e7358db579E5446AB6cE20D",
+      "address": "0xD189c9293141f9C28170d2fc5AbB42ae95125380",
       "abi": [
         {
           "inputs": [
             {
               "internalType": "address",
               "name": "mailbox",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "paymaster",
               "type": "address"
             },
             {
@@ -170,6 +175,19 @@ export default {
           "type": "function"
         },
         {
+          "inputs": [],
+          "name": "gasPaymaster",
+          "outputs": [
+            {
+              "internalType": "contract IInterchainGasPaymaster",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
           "inputs": [
             {
               "internalType": "uint32",
@@ -279,6 +297,19 @@ export default {
             }
           ],
           "name": "setDexPush",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "newPay",
+              "type": "uint256"
+            }
+          ],
+          "name": "setGasPrice",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
@@ -496,6 +527,10 @@ export default {
           ],
           "stateMutability": "view",
           "type": "function"
+        },
+        {
+          "stateMutability": "payable",
+          "type": "receive"
         }
       ]
     },

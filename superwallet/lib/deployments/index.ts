@@ -1,12 +1,9 @@
 import sepolia from './sepolia'
 import goerli from './goerli'
-// import op from './420'
-// import zora from './999'
 import opTestnet from "./opTestnet";
 
 import {ethers} from "ethers";
-import {Account, getSwtPrivateKey} from "../account";
-import Safe, {EthersAdapter} from "@safe-global/protocol-kit";
+import {getSwtPrivateKey} from "../account";
 
 // all supported networks
 // and their smartcontract artifacts
@@ -23,8 +20,6 @@ export type Network = {
     provider?: ethers.providers.JsonRpcProvider;
     account?: ethers.Wallet;
     txServiceUrl?: string;  // only for pulls
-    safeAdapter?: EthersAdapter;    // only for pulls
-    safeAccount?: Safe; // only for pulls
     dex?: ethers.Contract;
 }
 
@@ -93,7 +88,7 @@ export function getContractInfo(contractName: string): {[key: string]: ContractI
 }
 
 // Loads the instance of the contract
-export function getContracts(contractInfo: {[key: string]: ContractInfo}, networks: object) {
+export function getContracts(contractInfo, networks) {
     let contracts = {}
 
     for (let networkName in contractInfo) {
@@ -142,7 +137,7 @@ export function getSuperWalletInfoAt(chainId: string): ContractInfo {
     return undefined;
 }
 
-export const SupportedNetworks = async () => {
+export const SupportedNetworks = () => {
     const privateKey = getSwtPrivateKey();
 
     for (let name in Networks) {
@@ -150,14 +145,6 @@ export const SupportedNetworks = async () => {
         Networks[name].account = new ethers.Wallet(privateKey, Networks[name].provider);
 
         if (name != PushChain) {
-            let safeAdapter = new EthersAdapter({
-                ethers,
-                signerOrProvider: Networks[name].account,
-            });
-
-            Networks[name].safeAdapter = safeAdapter;
-            Networks[name].safeAccount = await Safe.create({ethAdapter: safeAdapter, safeAddress: Account[name]});
-
             let inf = getContractInfoAt(pullName, name);
             Networks[name].dex = getContract(inf, Networks[name]) as ethers.Contract;
         } else {

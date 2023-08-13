@@ -29,7 +29,7 @@ async function main() {
     let SWT = await ethers.getContractFactory("SuperWalletTest", signer)
     let contract = await SWT.attach(tokenAddr);
 
-    console.log(`Approve dex pull to use our tokens`);
+    console.log(`Approve dex pull to use our tokens token address, network: ${tokenAddr}, ${network.name}`);
     let tx = await contract.approve(dexPullAddr, totalAmountWei, {gasPrice: "2000000000"});
     console.log(`waiting for confirmation ${tx.hash}...`);
     await tx.wait();

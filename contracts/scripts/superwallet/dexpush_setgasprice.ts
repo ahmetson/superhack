@@ -12,7 +12,7 @@ async function main() {
     let DexPush = await ethers.getContractFactory("DexPush", signer)
     let dexPushAddress = contractNetworks[PushChain].contracts.DexPush.address;
 
-    let gasAmount = 101047 * 2;
+    let gasAmount = 202094;
     let contract = await DexPush.attach(dexPushAddress);
 
     let tx = await contract.setGasPrice(gasAmount);
