@@ -3,7 +3,7 @@ export default {
   "chainId": "84531",
   "contracts": {
     "DexPull": {
-      "address": "0x14eEF697c9b0cE96ed0C06d20EcB338cd7BEA11a",
+      "address": "0xA80058f54e1d64894C7aEc8e0Dd7E080BD1fcC91",
       "abi": [
         {
           "inputs": [
@@ -313,6 +313,24 @@ export default {
           "inputs": [
             {
               "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "internalType": "bool",
+              "name": "unsafe",
+              "type": "bool"
+            }
+          ],
+          "name": "setUnsafe",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
               "name": "",
               "type": "address"
             },
@@ -433,7 +451,7 @@ export default {
           "inputs": [
             {
               "internalType": "uint256",
-              "name": "amount",
+              "name": "sourceAmount",
               "type": "uint256"
             },
             {
@@ -445,6 +463,25 @@ export default {
           "name": "transferToken",
           "outputs": [],
           "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "name": "unsafeAccounts",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "view",
           "type": "function"
         }
       ]
