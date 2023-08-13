@@ -4,8 +4,9 @@ A SuperHack from [Medet Ahmetson](https://www.linkedin.com/in/ahmetson/).
 It's a SuperWallet that flattens the Ethereum's layer 2. 
 For the users, all the operations are done without switching the networks.
 
-Presentation slides about the product is on [Canva](https://www.canva.com/design/DAFrIKaBNqA/3YBWt25S90rVpRCfwxWgCg/edit?utm_content=DAFrIKaBNqA&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton).
-The flow diagrams on [Miro](https://miro.com/app/board/uXjVMugclZ8=/?share_link_id=575149552666).
+
+* [Canva](https://www.canva.com/design/DAFrIKaBNqA/3YBWt25S90rVpRCfwxWgCg/edit?utm_content=DAFrIKaBNqA&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) Presentation slides about the product to get introduced
+* [Miro](https://miro.com/app/board/uXjVMugclZ8=/?share_link_id=575149552666) Flow diagrams
 
 ### Used technologies:
 
