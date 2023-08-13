@@ -2,7 +2,7 @@ import sepolia from './sepolia'
 import goerli from './goerli'
 // import op from './420'
 // import zora from './999'
-import baseTestnet from "./baseTestnet";
+import opTestnet from "./opTestnet";
 
 import {ethers} from "ethers";
 import {Account, getSwtPrivateKey} from "../account";
@@ -10,7 +10,7 @@ import Safe, {EthersAdapter} from "@safe-global/protocol-kit";
 
 // all supported networks
 // and their smartcontract artifacts
-export let contractNetworks = {sepolia, baseTestnet, goerli};
+export let contractNetworks = {sepolia, opTestnet, goerli};
 
 let pullName = "DexPull";
 let pushName = "DexPush";
@@ -29,19 +29,19 @@ export type Network = {
 }
 
 export const Networks: {[key: string]: Network} = {
-    "baseTestnet": {
+    "opTestnet": {
         chainId: 0,
         domain: 0,
-        name: "baseTestnet",
-        rpc: process.env.NEXT_PUBLIC_BASE_RPC,
-        txServiceUrl: process.env.NEXT_PUBLIC_BASE_TX_SERVICE_RPC,
+        name: "opTestnet",
+        rpc: process.env.NEXT_PUBLIC_OP_RPC,
+        txServiceUrl: "",
     },
     "goerli": {
         chainId: 0,
         domain: 0,
         name: "goerli",
         rpc: process.env.NEXT_PUBLIC_GOERLI_RPC,
-        txServiceUrl: process.env.NEXT_PUBLIC_GOERLI_TX_SERVICE_RPC,
+        txServiceUrl: "",
     },
     "sepolia": {
         chainId: 0,
@@ -51,10 +51,11 @@ export const Networks: {[key: string]: Network} = {
         txServiceUrl: '',
     }
 }
-export const PushChain = "sepolia";
+export const PushChain = "opTestnet";
 
 // config sync during the building
-for (let contractNetwork of contractNetworks) {
+for (let name in contractNetworks) {
+    let contractNetwork = contractNetworks[name];
     if (!Networks.hasOwnProperty(contractNetwork.name)) {
         throw `contractNetwork ${contractNetwork.name} not in the Networks list`;
     } else {
@@ -74,9 +75,11 @@ export type ContractInfo = {
 export function getContractInfo(contractName: string): {[key: string]: ContractInfo} {
     let contracts: {[key: string]: ContractInfo} = {};
 
-    for (const network of contractNetworks) {
-        if (!network.contracts.hasOwnProperty(contractName))
+    for (const networkName in contractNetworks) {
+        if (networkName != contractName)
             continue;
+
+        let network = contractNetworks[networkName];
 
         contracts[network.name] = {
             networkName: network.name,
@@ -108,7 +111,8 @@ function getContract(inf: ContractInfo, network: Network) {
 }
 
 export function getContractInfoAt(name: string, networkName: string): ContractInfo {
-    for (const network of contractNetworks) {
+    for (const cName in contractNetworks) {
+        let network = contractNetworks[cName];
         if (network.name === networkName) {
             return {
                 networkName: network.name,
@@ -123,7 +127,8 @@ export function getContractInfoAt(name: string, networkName: string): ContractIn
 }
 
 export function getSuperWalletInfoAt(chainId: string): ContractInfo {
-    for (const network of contractNetworks) {
+    for (const networkName in contractNetworks) {
+        let network = contractNetworks[networkName];
         if (network.chainId === chainId) {
             return {
                 networkName: network.name,
