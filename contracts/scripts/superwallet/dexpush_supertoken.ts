@@ -1,8 +1,8 @@
 import { ethers } from "hardhat";
 import 'dotenv/config'
-import sepolia from "../../../superwallet/lib/deployments/sepolia";
+import {PushChain, contractNetworks} from "../../../superwallet/lib/deployments";
 import goerli from "../../../superwallet/lib/deployments/goerli";
-import baseTestnet from "../../../superwallet/lib/deployments/baseTestnet";
+import sepolia from "../../../superwallet/lib/deployments/sepolia";
 import {tokenIdByName} from "../../../superwallet/lib/token";
 
 async function main() {
@@ -10,17 +10,17 @@ async function main() {
     let signer = signers[0];
 
     let DexPush = await ethers.getContractFactory("DexPush", signer)
-    let dexPushAddress = sepolia.contracts.DexPush.address;
+    let dexPushAddress = contractNetworks[PushChain].contracts.DexPush.address;
 
     const swt = {
         id: tokenIdByName("SuperWalletTest"),
         goerli: goerli.contracts.SuperWalletTest.address,
-        base: baseTestnet.contracts.SuperWalletTest.address,
+        base: sepolia.contracts.SuperWalletTest.address,
     }
 
 
     let contract = await DexPush.attach(dexPushAddress);
-    const baseDomain = parseInt(baseTestnet.chainId);
+    const baseDomain = parseInt(sepolia.chainId);
     const goerliDomain = parseInt(goerli.chainId);
 
     console.log(`Setting ${swt.id} token in source ${baseDomain}...`);

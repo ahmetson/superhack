@@ -18,10 +18,11 @@ import {contractNetworks, PushChain} from "../../../superwallet/lib/deployments"
 async function main() {
     let dexPushAddress = contractNetworks[PushChain].contracts.DexPush.address;
 
-    // 3
+    // 2
     let destAmountWei = "0x1BC16D674EC80000";
     // 1
-    let sourceAmountWei = "0xDE0B6B3A7640000";
+    // let sourceAmountWei = "0xDE0B6B3A7640000";
+    let sourceAmountWei = "0x00";
 
     let signers = await ethers.getSigners();
     let signer = signers[0];
@@ -31,7 +32,7 @@ async function main() {
     let DexPush = await ethers.getContractFactory("DexPush", signer)
     let contract = await DexPush.attach(dexPushAddress);
 
-    const baseDomain = parseInt(contractNetworks["baseTestnet"].chainId);
+    const baseDomain = parseInt(contractNetworks["sepolia"].chainId);
     const goerliDomain = parseInt(contractNetworks["goerli"].chainId);
 
     console.log(`All data prepared. Let's create a Safe account and prepare the transaction to send on destination`);

@@ -1,9 +1,9 @@
-// Registers the DexPulls
 import { ethers } from "hardhat";
 import 'dotenv/config'
 import {PushChain, contractNetworks} from "../../../superwallet/lib/deployments";
 import goerli from "../../../superwallet/lib/deployments/goerli";
 import sepolia from "../../../superwallet/lib/deployments/sepolia";
+import {tokenIdByName} from "../../../superwallet/lib/token";
 
 async function main() {
     let signers = await ethers.getSigners();
@@ -12,21 +12,11 @@ async function main() {
     let DexPush = await ethers.getContractFactory("DexPush", signer)
     let dexPushAddress = contractNetworks[PushChain].contracts.DexPush.address;
 
+    let gasAmount = 101047 * 2;
     let contract = await DexPush.attach(dexPushAddress);
-    const baseDomain = parseInt(sepolia.chainId);
-    const goerliDomain = parseInt(goerli.chainId);
 
-    console.log(`Setting dex pull of base(${baseDomain})...`);
-    let tx = await contract.setSuperDex(baseDomain, sepolia.contracts.DexPull.address);
-    console.log(`Setting dex pull of goerli(${goerliDomain})...`);
-    let tx2 = await contract.setSuperDex(goerliDomain, goerli.contracts.DexPull.address);
-
-    console.log(`waiting...${tx2.hash}`);
+    let tx = await contract.setGasPrice(gasAmount);
     console.log(`waiting...${tx.hash}`);
-    await Promise.all([tx, tx2])
-
-    console.log(`Done!`);
-    console.log(`Now DexPush knows the pulls`);
 
     return "done!"
 }
