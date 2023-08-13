@@ -38,7 +38,7 @@ const config: HardhatUserConfig = {
     },
     opTestnet: {
       chainId: 420,
-      url: "https://goerli.optimism.io",
+      url: "https://optimism-goerli.public.blastapi.io",
       accounts: [process.env.ADMIN_PRIVATE_KEY],
     },
     modeTestnet: {

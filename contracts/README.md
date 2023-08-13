@@ -61,8 +61,8 @@ npx hardhat run scripts/auth_kit.ts
 
 ```shell
 npx hardhat deploy --network <network> --tags <ContractName>
-npx hardhat --network <network> export --export ../../superwallet/lib/deployments/<network>.ts
-npx hardhat --network <network> etherscan-verify --api-key $ETHERSCAN_KEY
+npx hardhat --network sepolia export --export /mnt/d/ahmetson/superhack/superwallet/lib/deployments/sepolia.ts
+npx hardhat --network sepolia etherscan-verify --api-key $ETHERSCAN_KEY
 ```
 
 > Verifying on Base is not working yet.
