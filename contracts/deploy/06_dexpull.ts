@@ -14,12 +14,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const pushDomain = parseInt(contractNetworks[PushChain].chainId);
     const pushAddr = contractNetworks[PushChain].contracts.DexPush.address as string;
     const mailbox = getMailbox(network.name);
+    const paymaster = "0x8f9C3888bFC8a5B25AED115A82eCbb788b196d2a";
 
     console.log(`Deployer: ${deployer}, Mailbox: ${mailbox}, PushDex: ${pushDomain}, ${pushAddr}`);
 
     await deploy('DexPull', {
         from: deployer,
-        args: [mailbox, pushAddr, pushDomain],
+        args: [mailbox, paymaster, pushAddr, pushDomain],
         log: true,
         // gasPrice and gasLimit are required by base network.
         gasPrice: "2000000000", //https://eth-converter.com/ use it to convert Gwei to Wei

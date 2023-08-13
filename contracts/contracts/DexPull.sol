@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import {HyperlaneConnectionClient} from "@hyperlane-xyz/core/contracts/HyperlaneConnectionClient.sol";
 import {TypeCasts} from "@hyperlane-xyz/core/contracts/libs/TypeCasts.sol";
+import {IInterchainGasPaymaster} from "@hyperlane-xyz/core/contracts/interfaces/IInterchainGasPaymaster.sol";
 
 /**
 DexPull is the part of the dex that seats on the blockchains.
@@ -27,16 +28,26 @@ contract DexPull is HyperlaneConnectionClient  {
 
     uint32 public dexPushDest;
     bytes32 public dexPush;
+    uint defaultPay = 202094;
+
+    IInterchainGasPaymaster public gasPaymaster;
 
     // Mailbox is responsible for transmitting the messages
     // Mailbox transmits the messages to the dexPush
     // @param mailbox Hyperlane mailbox
     // @param dexAddr the DexPush address on the SuperWallet Testnet.
     // @param dexDest the SuperWallet Testnet id in the hyperlane.
-    constructor(address mailbox, address dexAddr, uint32 dexDest) initializer {
+    constructor(address mailbox, address paymaster, address dexAddr, uint32 dexDest) initializer {
         __HyperlaneConnectionClient_initialize(mailbox);
         dexPush = TypeCasts.addressToBytes32(dexAddr);
         dexPushDest = dexDest;
+        gasPaymaster = IInterchainGasPaymaster(paymaster);
+    }
+
+    receive() external payable {}
+
+    function setGasPrice(uint newPay) external {
+        defaultPay = newPay;
     }
 
     function setUnsafe(address user, bool unsafe) external {
@@ -65,8 +76,11 @@ contract DexPull is HyperlaneConnectionClient  {
         // dex push should have the parameters of the request to send in destination.
         bytes memory wrappedData = abi.encode(transOp, msg.sender);
 
+        uint payAmount = gasPaymaster.quoteGasPayment(dexPushDest, defaultPay);
+
         // Notify the SuperWallet that tokens were deducted
-        mailbox.dispatch(dexPushDest, dexPush, wrappedData);
+        bytes32 id = mailbox.dispatch(dexPushDest, dexPush, wrappedData);
+        gasPaymaster.payForGas{value: payAmount * 2}(id, dexPushDest, defaultPay, address(this));
     }
 
     // For simplicity the liquidity part doesn't use Safe wallets (YET!)
@@ -86,7 +100,10 @@ contract DexPull is HyperlaneConnectionClient  {
             _amount1
         );
 
-        mailbox.dispatch(dexPushDest, dexPush, wrappedData);
+        uint payAmount = gasPaymaster.quoteGasPayment(dexPushDest, defaultPay);
+
+        bytes32 id = mailbox.dispatch(dexPushDest, dexPush, wrappedData);
+        gasPaymaster.payForGas{value: payAmount * 2}(id, dexPushDest, defaultPay, address(this));
     }
 
     // make sure that it's called from the sorted blockchains.
@@ -109,7 +126,10 @@ contract DexPull is HyperlaneConnectionClient  {
             isToken0
         );
 
-        mailbox.dispatch(dexPushDest, dexPush, wrappedData);
+        uint payAmount = gasPaymaster.quoteGasPayment(dexPushDest, defaultPay);
+
+        bytes32 id = mailbox.dispatch(dexPushDest, dexPush, wrappedData);
+        gasPaymaster.payForGas{value: payAmount * 2}(id, dexPushDest, defaultPay, address(this));
     }
 
     // ============ On receive functions ============
