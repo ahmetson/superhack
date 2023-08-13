@@ -1,0 +1,22 @@
+{
+  "chainId": 84531,
+  "name": "basegoerli",
+  "publicRpcUrls": [
+    { "http": "https://goerli.base.org" },
+    {"http": "https://base-goerli.public.blastapi.io"},
+    {"http": "https://base-goerli.blockpi.network/v1/rpc/public"},
+    {"http": "https://1rpc.io/base-goerli"}
+  ],
+  "blockExplorers": [ {
+    "name": "BaseScan",
+    "family": "etherscan",
+    "url": "https://goerli.basescan.org",
+    "apiUrl": "https://api-goerli.basescan.org/api",
+    "apiKey": "FBRGE9KCR52B13XU6MFYPV9J6G57E9S4BJ"
+  } ],
+  "blocks": { "confirmations": 1, "estimateBlockTime": 3 },
+  "contracts": {
+    "mailbox": "0x9d4Bdf4c343D4741E29362908f4FAB32b7a3fD83",
+    "interchainGasPaymaster": "0x889400fB9BDE04BFdf353cC718fED3d6dDcF735F"
+  }
+}
