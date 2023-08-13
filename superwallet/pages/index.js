@@ -1,11 +1,9 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import {getSortedPosts} from "../lib/posts";
-import {createSafe, createTx, getSafeInfo} from "../lib/safe";
 import {useState} from "react";
 import AppBar from '../components/appbar';
 import Balances from "../components/balances";
-
 export async function getStaticProps() {
   const allPostsData = getSortedPosts();
   return {
@@ -16,63 +14,16 @@ export async function getStaticProps() {
 }
 
 export default function Home({allPostsData}) {
-  const [safeAddr, setSafeAddr] = useState('0x9aA406F08c02c33E3377a38d543d9C284E0fa6A6');
-  const [to, setTo] = useState('');
-  const [value, setValue] = useState(0.0);
-
-  function handleSafeCreate() {
-    console.log(`Handling safe create...`);
-    createSafe().then((addr) => {
-      console.log(`Safe was created: ${addr}`);
-      setSafeAddr(addr);
-    }).catch(err => {console.error(err)});
-  }
-
-  function handleSafeInfo() {
-    console.log(`Retrieve the information about safe: ${safeAddr}`);
-    getSafeInfo(safeAddr).then(info => {
-      console.log(`Safe info retrieved:`);
-      console.log(info);
-    }).catch(err => {console.error(err)});
-  }
-
-  function handleSendTx() {
-    console.log(`Sending a transaction by ${safeAddr}...`);
-    createTx(to, value, safeAddr).then((hash) => {
-      console.log(`Transaction was deployed: ${hash}`);
-    }).catch(err => {console.error(err)});
-  }
-
   return (
       <div className={styles.container}>
         <Head>
-          <title>Testing Safe</title>
+          <title>SuperWallet Safe</title>
           <link rel="icon" href="/favicon.ico" />
         </Head>
 
         <main>
           <AppBar />
           <Balances></Balances>
-
-
-          {safeAddr.length == 0 ?
-              <button onClick={handleSafeCreate} className={styles.card}>
-                Create a new Safe
-              </button> :
-              <p>`Safe Address: ${safeAddr}`</p>
-          }
-
-          <section>
-            <h2>Retrieving the information about the safe</h2>
-            <input type="text" value={safeAddr} onChange={(e) => setSafeAddr(e.target.value)} placeholder="Safe address" />
-            <button className={styles.card} onClick={handleSafeInfo}>Print Safe info in the console</button>
-
-            <br />
-
-            <input type="text" value={to} onChange={(e) => setTo(e.target.value)} placeholder="Address to send" />
-            <input type="number" value={value} onChange={(e) => setValue(parseFloat(e.target.value))} placeholder="Amount" />
-            <button className={styles.card} onClick={handleSendTx}>Send SWT</button>
-          </section>
         </main>
 
         <style jsx>{`
