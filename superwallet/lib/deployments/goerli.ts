@@ -3,7 +3,7 @@ export default {
   "chainId": "5",
   "contracts": {
     "DexPull": {
-      "address": "0x2fA86cC980702aAcBd2C007bF22441650e5b997C",
+      "address": "0x6603714e4d8cFb195e7358db579E5446AB6cE20D",
       "abi": [
         {
           "inputs": [
@@ -266,6 +266,19 @@ export default {
         {
           "inputs": [],
           "name": "renounceOwnership",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "dexAddr",
+              "type": "address"
+            }
+          ],
+          "name": "setDexPush",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
