@@ -2,7 +2,6 @@
 import Safe, {ContractNetworksConfig, EthersAdapter, SafeAccountConfig, SafeFactory} from "@safe-global/protocol-kit";
 import SafeApiKit from '@safe-global/api-kit'
 import {ethers} from 'ethers';
-// import { ContractNetworksConfig } from '@safe-global/protocol-kit'
 import {ContractNetworkConfig} from "@safe-global/protocol-kit/dist/src/types";
 import {OperationType, SafeTransactionDataPartial, TransactionOptions} from "@safe-global/safe-core-sdk-types";
 import {ContractInfo, getSuperWalletInfoAt} from "./deployments";
@@ -73,7 +72,7 @@ export const isDeployed = async(safeAddress: string) => {
 }
 
 const loadContract = (info: ContractInfo): ethers.utils.Interface => {
-    return new ethers.utils.Interface(info.abi);
+    return info.abi;
 }
 
 export const createTx = async(to: string, amount: number, safeAddress?: string) => {
@@ -115,6 +114,7 @@ export const createTx = async(to: string, amount: number, safeAddress?: string) 
     console.log(`sign the transaction (${txHash}): `, safeTx);
     const signedSafeTx = await safe.signTransactionHash(txHash)
     console.log(`signed tx: `, signedSafeTx.data);
+
 
     console.log(`approving the submitted transaction: ${txHash}`);
     const txResponse = await safe.approveTransactionHash(txHash)
