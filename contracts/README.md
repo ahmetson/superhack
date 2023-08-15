@@ -61,7 +61,7 @@ npx hardhat run scripts/auth_kit.ts
 
 ```shell
 npx hardhat deploy --network <network> --tags <ContractName>
-npx hardhat --network sepolia export --export /mnt/d/ahmetson/superhack/superwallet/lib/deployments/sepolia.ts
+npx hardhat --network sepolia export --export /mnt/d/ahmetson/superhack/push/lib/deployments/sepolia.ts
 npx hardhat --network sepolia etherscan-verify --api-key $ETHERSCAN_KEY
 ```
 
@@ -69,7 +69,7 @@ npx hardhat --network sepolia etherscan-verify --api-key $ETHERSCAN_KEY
 
 After deploying all contracts use the following for each network:
 ```shell
-npx hardhat export --export /mnt/d/ahmetson/superhack/superwallet/lib/deployments/<networkName>.ts
+npx hardhat export --export /mnt/d/ahmetson/superhack/push/lib/deployments/<networkName>.ts
 ```
 It will export abi and the file name.
 

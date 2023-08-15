@@ -50,7 +50,7 @@ In `/mnt/d/repo/op-geth`
  --authrpc.vhosts="*" \
  --authrpc.addr=0.0.0.0 \
  --authrpc.port=8551 \
- --authrpc.jwtsecret=/mnt/d/ahmetson/superhack/superwallet-testnet-jwt.txt \
+ --authrpc.jwtsecret=/mnt/d/ahmetson/superhack/push-testnet-jwt.txt \
  --rollup.disabletxpoolgossip=true \
  --rollup.sequencerhttp=http://localhost:8547
  --ipcdisable
@@ -64,11 +64,11 @@ In `/mnt/d/repo/optimism/op-node`
 ```bash
 ./bin/op-node \
 --l2=http://localhost:8551 \
---l2.jwt-secret=/mnt/d/ahmetson/superhack/superwallet-testnet-jwt.txt \
+--l2.jwt-secret=/mnt/d/ahmetson/superhack/push-testnet-jwt.txt \
 --sequencer.enabled \
 --sequencer.l1-confs=1 \
 --verifier.l1-confs=1 \
---rollup.config=superwallet-testnet-rollup.json \
+--rollup.config=push-testnet-rollup.json \
 --rpc.addr=0.0.0.0 \
 --rpc.port=8547 \
 --rpc.enable-admin \
