@@ -1,4 +1,4 @@
-// Registers the DexPulls
+// Registers the DexPulls in DexPush
 import { ethers } from "hardhat";
 import 'dotenv/config'
 import {PushChain, contractNetworks} from "../../../superwallet/lib/deployments";
